@@ -1,0 +1,137 @@
+.footer {
+  background: var(--color-bg-brand);
+  color: var(--color-cream-100);
+  padding-block: var(--space-16) var(--space-8);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-12);
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+  }
+}
+
+.brandCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 36ch;
+}
+
+.tagline {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--color-terracotta-300);
+  font-size: var(--fs-lg);
+}
+
+.blurb {
+  color: var(--color-cream-100);
+  opacity: 0.8;
+  font-size: var(--fs-sm);
+}
+
+.social {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.socialLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(240, 236, 227, 0.1);
+  color: var(--color-cream-100);
+  transition:
+    background var(--transition-fast) var(--ease-out),
+    transform var(--transition-fast) var(--ease-out);
+}
+
+.socialLink:hover {
+  background: var(--color-cta);
+  color: var(--color-terracotta-900);
+  transform: translateY(-2px);
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.col h3 {
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-cream-100);
+  opacity: 0.75;
+  margin-bottom: var(--space-1);
+}
+
+.col a,
+.address {
+  color: var(--color-cream-100);
+  opacity: 0.9;
+  font-size: var(--fs-sm);
+}
+
+.col a:hover {
+  opacity: 1;
+  color: var(--color-cta);
+}
+
+.bottomBar {
+  margin-top: var(--space-16);
+  padding-top: var(--space-8);
+  border-top: 1px solid rgba(240, 236, 227, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+
+@media (min-width: 1024px) {
+  .bottomBar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.copyright {
+  font-size: var(--fs-sm);
+  opacity: 0.7;
+}
+
+.legalLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  font-size: var(--fs-sm);
+}
+
+.legalLinks a {
+  color: var(--color-cream-100);
+  opacity: 0.8;
+}
+
+.legalLinks a:hover {
+  opacity: 1;
+  color: var(--color-cta);
+}
+
+.legalLinks .adminLink {
+  /* De-emphasized via size, not color/opacity — a faded admin link would fail WCAG AA
+     contrast (this was 3.61:1 against forest-700 at opacity 0.5, needs 4.5:1). */
+  font-size: 0.75em;
+  align-self: center;
+}

@@ -1,0 +1,14 @@
+{
+  "name": "green-barbet-adventures",
+  "private": true,
+  "description": "Monorepo orchestration only — no app code lives here. See /frontend and /backend, each independently runnable via their own package.json.",
+  "scripts": {
+    "dev": "concurrently -n frontend,backend -c cyan,magenta \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\"",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "install:all": "npm install --prefix frontend && npm install --prefix backend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

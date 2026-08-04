@@ -1,0 +1,23 @@
+.section {
+  padding-block: var(--space-12);
+}
+
+@media (min-width: 1024px) {
+  .section {
+    padding-block: var(--space-16);
+  }
+}
+
+.cream {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.forest {
+  background: var(--color-bg-brand);
+  color: var(--color-text-on-brand);
+}
+
+.transparent {
+  background: transparent;
+}

@@ -1,0 +1,93 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--space-16);
+  }
+}
+
+.storyCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (min-width: 1024px) {
+  .storyCol {
+    flex: 1 1 55%;
+  }
+}
+
+.storyCol p {
+  font-size: var(--fs-lg);
+  color: var(--color-text-muted);
+  max-width: 65ch;
+}
+
+.collage {
+  width: 100%;
+  max-width: 420px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+@media (min-width: 1024px) {
+  .collage {
+    flex: 1 1 40%;
+  }
+}
+
+.counterBlock {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.counterNumber {
+  font-family: var(--font-display);
+  font-size: var(--fs-3xl);
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.counterLabel {
+  font-size: var(--fs-base);
+  color: var(--color-text-muted);
+}
+
+.pillars {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  margin-top: var(--space-16);
+}
+
+@media (min-width: 768px) {
+  .pillars {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.pillar {
+  padding: var(--space-6);
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.pillar h2 {
+  font-size: var(--fs-xl);
+  margin-bottom: var(--space-3);
+}
+
+.pillar p {
+  color: var(--color-text-muted);
+}

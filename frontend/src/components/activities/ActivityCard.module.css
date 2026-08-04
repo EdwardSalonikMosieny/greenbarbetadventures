@@ -1,0 +1,47 @@
+.card {
+  display: block;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-bg-card);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--transition-base) var(--ease-out),
+    box-shadow var(--transition-base) var(--ease-out);
+}
+
+.card:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-lg);
+}
+
+.imageWrap {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--color-border);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-base) var(--ease-out);
+}
+
+.card:hover .image {
+  transform: scale(1.08);
+}
+
+.content {
+  padding: var(--space-4);
+}
+
+.title {
+  font-size: var(--fs-lg);
+  color: var(--color-text);
+  margin-bottom: var(--space-2);
+}
+
+.description {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}

@@ -1,0 +1,26 @@
+.wrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-12);
+}
+
+@media (min-width: 1024px) {
+  .wrap {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    align-items: start;
+  }
+}
+
+.intro p {
+  color: var(--color-text-muted);
+  font-size: var(--fs-lg);
+  margin-top: var(--space-3);
+  max-width: 48ch;
+}
+
+.formCol {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-sm);
+}

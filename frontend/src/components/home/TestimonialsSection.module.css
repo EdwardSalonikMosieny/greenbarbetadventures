@@ -1,0 +1,37 @@
+.section {
+  scroll-margin-top: var(--fixed-nav-height, 96px);
+}
+
+.header {
+  text-align: center;
+  max-width: 60ch;
+  margin-inline: auto;
+  margin-bottom: var(--space-12);
+}
+
+.header p {
+  color: var(--color-text-muted);
+  font-size: var(--fs-lg);
+  margin-top: var(--space-3);
+}
+
+.empty {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: var(--space-8) 0;
+}
+
+.cta {
+  text-align: center;
+  margin-top: var(--space-12);
+}
+
+.ctaLink {
+  font-weight: 600;
+  color: var(--color-accent);
+  font-size: var(--fs-base);
+}
+
+.ctaLink:hover {
+  color: var(--color-accent-hover);
+}

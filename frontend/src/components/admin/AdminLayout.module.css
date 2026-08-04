@@ -1,0 +1,86 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--color-bg-brand);
+  color: var(--color-cream-100);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-6) var(--space-4);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-lg);
+  margin-bottom: var(--space-8);
+  padding-inline: var(--space-2);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+}
+
+.link {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--color-cream-100);
+  opacity: 0.75;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+}
+
+.link:hover {
+  opacity: 1;
+  background: rgba(240, 236, 227, 0.08);
+}
+
+.active {
+  opacity: 1;
+  background: rgba(240, 236, 227, 0.14);
+}
+
+.footer {
+  border-top: 1px solid rgba(240, 236, 227, 0.15);
+  padding-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.adminName {
+  font-size: var(--fs-sm);
+  opacity: 0.75;
+  padding-inline: var(--space-2);
+}
+
+.logout {
+  border: 1px solid rgba(240, 236, 227, 0.3);
+  color: var(--color-cream-100);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast) var(--ease-out);
+}
+
+.logout:hover {
+  background: rgba(240, 236, 227, 0.1);
+}
+
+.content {
+  flex: 1;
+  padding: var(--space-8);
+  min-width: 0;
+}

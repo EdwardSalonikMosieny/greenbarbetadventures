@@ -1,0 +1,49 @@
+.wrapper {
+  position: relative;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  color: var(--color-text);
+}
+
+/* No margin-top gap between the trigger and menu on purpose: a real (margin) gap sits
+   outside both elements' boxes, so moving the mouse from the trigger down to the menu
+   crosses non-hoverable space and fires mouseleave on .wrapper before the pointer ever
+   reaches the menu — the menu would flicker shut the moment you moved toward it. The
+   same visual spacing is recreated with padding-top instead, which is still inside the
+   hoverable box. */
+.menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 220px;
+  padding-top: var(--space-2);
+  z-index: 20;
+}
+
+.menuList {
+  padding: var(--space-2);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.menuItem {
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  color: var(--color-text);
+  transition: background var(--transition-fast) var(--ease-out);
+}
+
+.menuItem:hover,
+.menuItem:focus-visible {
+  background: var(--color-bg);
+}

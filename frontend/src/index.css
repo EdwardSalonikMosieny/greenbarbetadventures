@@ -1,0 +1,37 @@
+@import './styles/reset.css';
+@import './styles/variables.css';
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  line-height: var(--lh-tight);
+  color: var(--color-text);
+}
+
+h1 {
+  font-size: var(--fs-3xl);
+}
+
+h2 {
+  font-size: var(--fs-2xl);
+}
+
+h3 {
+  font-size: var(--fs-xl);
+}
+
+small {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}

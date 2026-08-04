@@ -1,0 +1,131 @@
+// Green Barbet Adventures — Prisma schema
+// See CLAUDE.md "Database" section for the source-of-truth model spec.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TourType {
+  WILDLIFE_SAFARI
+  CULTURAL
+  LUXURY
+  MOUNTAIN_CLIMBING
+  CAMPING
+  BIRDING
+}
+
+enum BookingStatus {
+  NEW
+  CONTACTED
+  CONFIRMED
+  CLOSED
+}
+
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+}
+
+model Destination {
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  description  String
+  heroImageUrl String
+  region       String
+  tours        Tour[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Tour {
+  id               String           @id @default(cuid())
+  title            String
+  slug             String           @unique
+  description      String
+  itinerary        Json
+  durationDays     Int
+  durationNights   Int
+  priceUsd         Decimal          @db.Decimal(10, 2)
+  discountPriceUsd Decimal?         @db.Decimal(10, 2)
+  tourType         TourType
+  destination      Destination      @relation(fields: [destinationId], references: [id])
+  destinationId    String
+  coverImageUrl    String
+  galleryImages    GalleryImage[]
+  isFeatured       Boolean          @default(false)
+  isPublished      Boolean          @default(false)
+  testimonials     Testimonial[]
+  bookingInquiries BookingInquiry[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}
+
+model GalleryImage {
+  id        String   @id @default(cuid())
+  imageUrl  String
+  tour      Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  tourId    String
+  createdAt DateTime @default(now())
+}
+
+model Activity {
+  id          String @id @default(cuid())
+  title       String
+  description String
+  imageUrl    String
+}
+
+model Experience {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  coverImageUrl String
+  body          String
+  publishedAt   DateTime?
+}
+
+model Testimonial {
+  id               String   @id @default(cuid())
+  customerName     String
+  // Not shown publicly — collected so the owner can verify/follow up on a submission,
+  // same reasoning as BookingInquiry.email.
+  customerEmail    String
+  customerPhotoUrl String?
+  rating           Int
+  quote            String
+  tour             Tour?    @relation(fields: [tourId], references: [id])
+  tourId           String?
+  // Client-submitted testimonials start unapproved — an admin has to review and approve
+  // one before it appears on the public site, so nothing unmoderated goes live.
+  isApproved       Boolean  @default(false)
+  createdAt        DateTime @default(now())
+}
+
+model BookingInquiry {
+  id                String        @id @default(cuid())
+  name              String
+  email             String
+  phone             String
+  tour              Tour?         @relation(fields: [tourId], references: [id])
+  tourId            String?
+  preferredDates    String
+  numberOfTravelers Int
+  message           String
+  status            BookingStatus @default(NEW)
+  createdAt         DateTime      @default(now())
+}
+
+model NewsletterSubscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  subscribedAt DateTime @default(now())
+}

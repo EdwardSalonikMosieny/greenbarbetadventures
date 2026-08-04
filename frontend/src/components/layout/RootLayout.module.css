@@ -1,0 +1,7 @@
+/* Navbar is fixed (removed from flow) so every route needs this padding to
+   avoid content starting underneath it. Value is measured by Navbar itself
+   (ResizeObserver) since it differs once TopBar appears at the 1024px
+   breakpoint; the fallback only matters for the first paint before JS runs. */
+.main {
+  padding-top: var(--fixed-nav-height, 96px);
+}

@@ -1,0 +1,11 @@
+node_modules
+dist
+.env
+*.local
+
+# uploaded files in dev — see CLAUDE.md for the S3/Cloudinary swap path in production
+uploads/*
+!uploads/.gitkeep
+
+npm-debug.log*
+.DS_Store

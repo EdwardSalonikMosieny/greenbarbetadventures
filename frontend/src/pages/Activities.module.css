@@ -1,0 +1,10 @@
+.intro {
+  max-width: 60ch;
+  margin-bottom: var(--space-12);
+}
+
+.intro p {
+  color: var(--color-text-muted);
+  font-size: var(--fs-lg);
+  margin-top: var(--space-3);
+}

@@ -1,0 +1,69 @@
+/*
+ * Self-hosted @font-face declarations (same files @fontsource ships), with
+ * font-display: optional instead of @fontsource's default `swap`.
+ *
+ * `swap` was causing a large Cumulative Layout Shift: text first paints in the
+ * fallback font, then reflows once Fraunces/Inter finish downloading, and on this
+ * site's long single-page Home that reflow moves everything below it — including a
+ * very tall Footer — measured at CLS 0.564 (target: <0.1). `optional` gives the font
+ * a very short window to be ready before first paint; if it's cached it's used
+ * immediately, otherwise the page keeps the fallback font for that load with no later
+ * swap, trading an occasional "no custom font on this specific load" for eliminating
+ * the shift outright — the standard fix for exactly this failure mode.
+ */
+
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 500;
+  font-display: optional;
+  src: url('../../node_modules/@fontsource/fraunces/files/fraunces-latin-500-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 600;
+  font-display: optional;
+  src: url('../../node_modules/@fontsource/fraunces/files/fraunces-latin-600-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 700;
+  font-display: optional;
+  src: url('../../node_modules/@fontsource/fraunces/files/fraunces-latin-700-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fraunces';
+  font-style: italic;
+  font-weight: 500;
+  font-display: optional;
+  src: url('../../node_modules/@fontsource/fraunces/files/fraunces-latin-500-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: optional;
+  src: url('../../node_modules/@fontsource/inter/files/inter-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: optional;
+  src: url('../../node_modules/@fontsource/inter/files/inter-latin-500-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: optional;
+  src: url('../../node_modules/@fontsource/inter/files/inter-latin-600-normal.woff2') format('woff2');
+}

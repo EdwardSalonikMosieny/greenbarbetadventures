@@ -1,0 +1,94 @@
+.hero {
+  width: 100%;
+  max-height: 480px;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-6);
+}
+
+.destinationTag {
+  display: inline-block;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-1);
+}
+
+.destinationTag:hover {
+  color: var(--color-accent-hover);
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  align-items: baseline;
+  margin-top: var(--space-4);
+  color: var(--color-text-muted);
+}
+
+.description {
+  font-size: var(--fs-lg);
+  color: var(--color-text-muted);
+  max-width: 65ch;
+  margin-top: var(--space-4);
+}
+
+.itineraryHeading {
+  margin-top: var(--space-8);
+  margin-bottom: var(--space-4);
+}
+
+.itinerary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-left: var(--space-6);
+  max-width: 65ch;
+  color: var(--color-text);
+}
+
+.checklist {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-2) var(--space-6);
+  max-width: 65ch;
+  color: var(--color-text);
+}
+
+.checklist li {
+  position: relative;
+  padding-left: var(--space-6);
+}
+
+.checklist li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.cta {
+  display: inline-block;
+  margin-top: var(--space-8);
+  background: var(--color-cta);
+  color: var(--color-cta-text);
+  font-weight: 600;
+  padding: var(--space-3) var(--space-8);
+  border-radius: var(--radius-md);
+  transition:
+    filter var(--transition-fast) var(--ease-out),
+    transform var(--transition-fast) var(--ease-out);
+}
+
+.cta:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+.cta:active {
+  transform: scale(0.96);
+}

@@ -1,0 +1,140 @@
+.hero {
+  width: 100%;
+  max-height: 480px;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-6);
+}
+
+.region {
+  display: block;
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-1);
+}
+
+.description {
+  font-size: var(--fs-lg);
+  color: var(--color-text-muted);
+  max-width: 65ch;
+  margin-top: var(--space-4);
+}
+
+.details {
+  font-size: var(--fs-base);
+  color: var(--color-text);
+  max-width: 70ch;
+  margin-top: var(--space-4);
+  line-height: 1.7;
+}
+
+.galleryWrap {
+  position: relative;
+  margin-top: var(--space-8);
+}
+
+.gallery {
+  display: flex;
+  gap: var(--space-4);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: var(--space-3);
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+.galleryItem {
+  flex: 0 0 260px;
+  margin: 0;
+  scroll-snap-align: start;
+}
+
+.galleryButton {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.galleryImage {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  transition: transform var(--transition-base) var(--ease-out);
+}
+
+.galleryButton:hover .galleryImage,
+.galleryButton:focus-visible .galleryImage {
+  transform: scale(1.06);
+}
+
+/* Native drag/touch/trackpad scrolling already works on .gallery — these buttons exist
+   so a plain mouse-wheel user has an obvious, clickable way to move through the strip too. */
+.scrollBtn {
+  position: absolute;
+  top: 110px;
+  transform: translateY(-50%);
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  font-size: 1.5rem;
+  line-height: 1;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast) var(--ease-out),
+    transform var(--transition-fast) var(--ease-out);
+}
+
+.scrollBtn:hover {
+  background: var(--color-accent);
+  color: var(--color-cta-text);
+}
+
+.scrollBtn:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.scrollBtnPrev {
+  left: -8px;
+}
+
+.scrollBtnNext {
+  right: -8px;
+}
+
+@media (min-width: 640px) {
+  .galleryItem {
+    flex-basis: 320px;
+  }
+
+  .galleryImage {
+    height: 260px;
+  }
+
+  .scrollBtn {
+    top: 130px;
+  }
+
+  .scrollBtnPrev {
+    left: -20px;
+  }
+
+  .scrollBtnNext {
+    right: -20px;
+  }
+}

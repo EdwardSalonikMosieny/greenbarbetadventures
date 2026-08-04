@@ -1,0 +1,48 @@
+.bar {
+  display: none;
+  background: var(--color-bg-brand);
+  color: var(--color-text-on-brand);
+  font-size: var(--fs-sm);
+  transition: background var(--transition-base) var(--ease-out);
+}
+
+@media (min-width: 1024px) {
+  .bar {
+    display: block;
+  }
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--space-1);
+}
+
+.contacts {
+  display: flex;
+  gap: var(--space-6);
+}
+
+.contacts a {
+  opacity: 0.85;
+  transition: opacity var(--transition-fast) var(--ease-out);
+}
+
+.contacts a:hover {
+  opacity: 1;
+}
+
+.admin {
+  display: flex;
+  align-items: center;
+  opacity: 0.75;
+  transition:
+    opacity var(--transition-fast) var(--ease-out),
+    transform var(--transition-fast) var(--ease-out);
+}
+
+.admin:hover {
+  opacity: 1;
+  transform: scale(1.08);
+}

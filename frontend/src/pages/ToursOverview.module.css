@@ -1,0 +1,28 @@
+.intro {
+  max-width: 60ch;
+  margin-bottom: var(--space-12);
+}
+
+.intro p {
+  color: var(--color-text-muted);
+  font-size: var(--fs-lg);
+  margin-top: var(--space-3);
+}
+
+.categoryPhotos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-12);
+}
+
+.categoryPhotoItem {
+  margin: 0;
+}
+
+.categoryPhotoImage {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}

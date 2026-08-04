@@ -1,0 +1,32 @@
+.logo {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-lg);
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.logoImageLink {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.logoImage {
+  height: 44px;
+  width: auto;
+}
+
+.accent {
+  color: var(--color-accent);
+}
+
+.light {
+  color: var(--color-cream-100);
+}
+
+.light .accent {
+  /* Not gold here — gold-on-dark-green measured under WCAG AA's 4.5:1. Cream
+     matches the rest of .light and is already verified to pass. */
+  color: var(--color-cream-100);
+}
