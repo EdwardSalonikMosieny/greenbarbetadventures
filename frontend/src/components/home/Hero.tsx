@@ -23,6 +23,7 @@ const HERO_VIDEOS: readonly { src: string; alt: string }[] = [
   { src: '/images/hero-lion.mp4', alt: 'A lion resting near safari vehicles in the Mara' },
   { src: '/images/hero-rhino.mp4', alt: 'A crash of rhinos crossing a bush track' },
   { src: '/images/hero-zebra.mp4', alt: 'A zebra grazing on the savanna' },
+  { src: '/images/hero-elephant-close.mp4', alt: 'An elephant with ears flared, close up in tall grass' },
 ];
 
 const TAGLINE_INTERVAL_MS = 4000;

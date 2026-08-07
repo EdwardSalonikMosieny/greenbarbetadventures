@@ -217,12 +217,11 @@ export const DESTINATIONS: readonly Destination[] = [
     details: [
       "Ol Pejeta sits on the Laikipia Plateau just south of Nanyuki — itself famous as one of the few places on the planet where you can stand with one foot in each hemisphere at the marked equator crossing on the Nyeri–Nanyuki road, a popular stop on the way in or out of the conservancy. Inside, Ol Pejeta protects the largest black rhino population in East Africa and is home to Najin and Fatu, the last two northern white rhinos left on Earth, kept under 24-hour armed guard. It's also one of the few conservancies with all of the Big Five, plus Sweetwaters Chimpanzee Sanctuary, East Africa's only chimpanzee sanctuary, home to chimps rescued from captivity and conflict elsewhere in Africa. Conservation fees paid by visitors fund the anti-poaching and community programs that keep it all running.",
     ],
-    // A clear shot of white rhinos grazing inside the conservancy — no people in frame,
-    // swapped in for the equator-sign photo (now in the gallery instead).
-    heroImageUrl: '/images/white-rhinos-ol-pejeta.jpg',
-    heroImageWidth: 1600,
-    heroImageHeight: 1067,
-    heroImageCredit: 'Ray in Manila, CC BY 2.0, via Wikimedia Commons',
+    // Real client photo — the "You Are on the Equator" marker branded with the Ol Pejeta
+    // Conservancy sign, an unmistakable, well-known Ol Pejeta landmark.
+    heroImageUrl: '/images/olpejetarepresentationpic.jpeg',
+    heroImageWidth: 1472,
+    heroImageHeight: 1472,
     gallery: [
       {
         // Real photo supplied by the client — a black leopard (a genuine, well-documented
@@ -233,17 +232,22 @@ export const DESTINATIONS: readonly Destination[] = [
         height: 424,
       },
       {
-        src: '/images/imageolpejeta.jpeg',
-        alt: 'The Ol Pejeta Conservancy sign at Rongai Gate',
-        width: 530,
-        height: 660,
+        src: '/images/olpejatapic3.jpeg',
+        alt: 'A group of white rhinos grazing on open grassland with Mount Kenya in the distance',
+        width: 679,
+        height: 452,
       },
       {
-        src: '/images/equator-sign-nanyuki.jpg',
-        alt: 'The Nanyuki equator crossing marker, a popular stop on the way to Ol Pejeta',
-        width: 1600,
-        height: 1044,
-        credit: 'Ninara, CC BY 2.0, via Wikimedia Commons',
+        src: '/images/olpejetapic2.jpeg',
+        alt: 'A male lion roaring in tall grass against a clear blue sky',
+        width: 679,
+        height: 451,
+      },
+      {
+        src: '/images/olpejtapic1.jpeg',
+        alt: 'A mixed herd of oryx and reticulated giraffes grazing on open plains',
+        width: 739,
+        height: 415,
       },
     ],
     isFeatured: false,

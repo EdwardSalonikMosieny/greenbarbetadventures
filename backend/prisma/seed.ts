@@ -19,7 +19,7 @@ const PLACEHOLDER = {
   lolDaiga: '/images/lodaiga3.jpeg', // real photo — Laikipia Plateau hills/kopjes, from the client's own trip library
   sagana: '/images/saganawaterrafting2.jpeg', // real photo — Tana River rapids, from the client's own trip library
   aberdares: '/images/image1.jpeg', // real photo (forest waterfall) from the client's own trip library
-  olPejeta: '/images/white-rhinos-ol-pejeta.jpg', // white rhinos grazing at Ol Pejeta — Ray in Manila, CC BY 2.0
+  olPejeta: '/images/olpejetarepresentationpic.jpeg', // real client photo — the Ol Pejeta-branded equator marker
   solio: '/images/image42.jpeg', // real photo (white rhino mother + calf) from the client's own trip library
   mountKenya: '/images/mtkenya1.jpeg', // real client photo — Batian/Nelion's summit above the forest line
   masaiMara: 'https://images.unsplash.com/photo-1767380194390-5ffb5c49cc78?w=1600', // wildebeest herd, savanna
