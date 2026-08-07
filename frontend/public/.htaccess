@@ -1,0 +1,24 @@
+# Served as-is from hosting.com (Apache/LiteSpeed shared hosting) — Vite copies
+# this file verbatim from public/ into dist/ on build, same as everything else
+# in this folder.
+
+# React Router client-side routing — fall back to index.html for any request
+# that isn't a real file or directory (Nginx equivalent: try_files ... /index.html).
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# Long cache for hashed, immutable Vite build assets.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+</IfModule>

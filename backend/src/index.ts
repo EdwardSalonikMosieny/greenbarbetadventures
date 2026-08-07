@@ -28,9 +28,14 @@ app.use(
     crossOriginResourcePolicy: { policy: 'cross-origin' },
   }),
 );
+// FRONTEND_ORIGIN is comma-separated so both the apex and www domains (served
+// separately from the API under the split-hosting setup) can be allowed at once.
+const allowedOrigins = (process.env.FRONTEND_ORIGIN ?? 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim());
 app.use(
   cors({
-    origin: process.env.FRONTEND_ORIGIN ?? 'http://localhost:5173',
+    origin: allowedOrigins,
   }),
 );
 app.use(express.json());

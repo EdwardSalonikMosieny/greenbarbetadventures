@@ -1,8 +1,10 @@
-name: Deploy to VPS
+name: Deploy backend to VPS
 
 # Runs automatically on every push to main — this is the "push to GitHub and
-# it goes live" piece. See deploy/README.md for the one-time setup needed
-# before this will work (SSH key + repo secrets).
+# the API goes live" piece. Deploys ONLY the backend; the frontend is a
+# separate static build shipped to hosting.com by deploy-frontend.yml. See
+# deploy/README.md for the one-time setup needed before this will work (SSH
+# key + repo secrets).
 on:
   push:
     branches: [main]
@@ -31,9 +33,5 @@ jobs:
             npx prisma migrate deploy
             npm run build
             pm2 restart gba-backend
-
-            cd "$APP_DIR/frontend"
-            npm ci
-            npm run build
 
             sudo nginx -t && sudo systemctl reload nginx
