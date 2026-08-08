@@ -1,9 +1,19 @@
 // Small typed fetch wrapper for the backend API.
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4000/api/v1';
+//
+// In production the reverse proxy forwards /api/ to the backend on the same
+// host, so a relative base is correct and needs no configuration. Defaulting to
+// it — rather than to a localhost URL — means a missing or mistyped env file can
+// never ship a build that asks the visitor's own machine for the API.
+// Dev is genuinely cross-origin (Vite on 5173, Express on 3070), so it keeps an
+// absolute URL. VITE_API_BASE_URL still overrides both.
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ??
+  (import.meta.env.DEV ? 'http://localhost:3070/api/v1' : '/api/v1');
 
 // Uploaded images are served from the API's origin (not under /api/v1) — e.g.
-// "http://localhost:4000/uploads/xyz.jpeg". Derived from API_BASE_URL so this doesn't
-// need its own separately-configured env var that could drift out of sync.
+// "http://localhost:3070/uploads/xyz.jpeg" in dev, "/uploads/xyz.jpeg" in
+// production. Derived from API_BASE_URL so this doesn't need its own
+// separately-configured env var that could drift out of sync.
 export const API_ORIGIN = API_BASE_URL.replace(/\/api\/v1\/?$/, '');
 
 export class ApiError extends Error {

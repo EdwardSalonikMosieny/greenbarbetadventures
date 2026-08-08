@@ -105,12 +105,14 @@ without affecting the others:
 `PORT`, `FRONTEND_ORIGIN`, `DATABASE_URL`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `BCRYPT_SALT_ROUNDS`
 
 **Frontend** (`frontend/.env.example`):
-`VITE_API_BASE_URL`
+`VITE_API_BASE_URL` — optional, and unset in production.
 
-`FRONTEND_ORIGIN` (backend) and `VITE_API_BASE_URL` (frontend) each point at the
-*other* app's deployed URL — both need updating together whenever either app's URL
-changes, or requests will fail (CORS block on the backend side, wrong API target on
-the frontend side).
+In the deployed setup both apps sit behind one reverse proxy on one origin, so
+the frontend calls a relative `/api/v1` and needs no configuration; see
+`deploy/README.md`. `FRONTEND_ORIGIN` (backend) still has to list the real public
+origins, or the browser's own requests get CORS-blocked. Set
+`VITE_API_BASE_URL` only when pointing the frontend at an API on a *different*
+origin — and then update `FRONTEND_ORIGIN` to match, or requests will fail.
 
 ### Production build checklist
 
@@ -119,8 +121,8 @@ the frontend side).
 - [ ] `npx prisma migrate deploy` run against production **before** first traffic (not `migrate dev` — see backend README)
 - [ ] Initial admin created separately with `npm run prisma:create-admin` and a unique secret
 - [ ] Upload storage swapped from local disk to S3/Cloudinary (`backend/src/middleware/upload.ts`) — local disk storage does not persist across redeploys on most PaaS hosts
-- [ ] `FRONTEND_ORIGIN` (backend) and `VITE_API_BASE_URL` (frontend) both set to the real deployed URLs, not localhost
-- [ ] Frontend built with `npm run build` and served via a host that applies the SPA fallback rewrite (`vercel.json` / `public/_redirects` already provided — confirm the host actually picks one up)
+- [ ] `FRONTEND_ORIGIN` (backend) set to the real deployed origins, not localhost — the frontend needs no matching var when both are behind one proxy
+- [ ] Frontend built with `npm run build` and served with an SPA fallback rewrite — `frontend/server.js` does this on the VPS; `vercel.json` / `public/_redirects` cover static hosts instead
 - [ ] `npm run build && npm run lint` pass clean on both apps
 - [ ] Real photography in place, or the current placeholder images (a mix of the old site's own uploads and labeled stock) are an acceptable interim — see CLAUDE.md's imagery notes
 - [ ] Legal pages (`/privacy-policy`, `/terms`) reviewed by an actual lawyer — current copy is real and complete but was written by Claude, not counsel

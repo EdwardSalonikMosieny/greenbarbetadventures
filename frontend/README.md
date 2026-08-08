@@ -15,10 +15,10 @@ npm run dev
 
 Edit `.env`:
 
-- `VITE_API_BASE_URL` — the backend API's base URL, including `/api/v1` (e.g.
-  `http://localhost:3070/api/v1` in dev, `https://greenbarbetadventures.com/api/v1`
-  in prod — the reverse proxy forwards `/api/` to the backend, so production is
-  same-origin)
+- `VITE_API_BASE_URL` — **optional**. `src/lib/apiClient.ts` already defaults to
+  `http://localhost:3070/api/v1` in dev and a relative `/api/v1` in production,
+  where the reverse proxy forwards `/api/` to the backend on the same origin.
+  Set it only to target an API somewhere other than those defaults.
 
 Runs at http://localhost:5173 by default.
 
@@ -43,13 +43,19 @@ rule configured.
 
 ## Deployment
 
-Suggested hosts: **Vercel** or **Netlify** (either is a good fit for a static Vite
-build with no server-side rendering needs).
+**The live site does not use a static host.** It is built on the VPS and served
+by `server.js` under PM2, behind a reverse proxy that also forwards `/api/` to
+the backend — see `deploy/README.md`. Deploys are automatic on push to `main`.
+
+The rest of this section applies only if you move the frontend to a static host
+instead (Vercel or Netlify both fit a Vite build with no server-side rendering):
 
 1. Build command: `npm run build`. Output directory: `dist`.
 2. Set `VITE_API_BASE_URL` in the host's environment settings to the deployed
-   backend's URL. Vite bakes `VITE_*` vars into the build at build time, not
-   runtime — changing it requires a rebuild, not just a redeploy of the same build.
+   backend's URL — a separate host means the API is no longer same-origin, so
+   the relative default will not work. Vite bakes `VITE_*` vars into the build at
+   build time, not runtime — changing it requires a rebuild, not just a redeploy
+   of the same build.
 3. SPA fallback routing is already configured (`vercel.json` for Vercel,
    `public/_redirects` for Netlify) — confirm whichever host you use actually picks
    one of these up (Vercel auto-detects `vercel.json`; Netlify auto-detects

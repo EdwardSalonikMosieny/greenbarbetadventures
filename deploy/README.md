@@ -71,11 +71,8 @@ Set up once, outside this repo, before the first deploy:
    `HOST=127.0.0.1`, `NODE_ENV=production`, a real `DATABASE_URL`, a 64+
    character random `JWT_SECRET`, and `FRONTEND_ORIGIN` listing the apex and
    `www` origins.
-5. **`frontend/.env.production`** in the same checkout, with
-   `VITE_API_BASE_URL` pointing at `/api/v1` on the public origin. Production is
-   same-origin, so no CORS preflight applies.
-6. **Reverse proxy** configured per the contract below, with TLS issued.
-7. **Firewall** allowing 80/443 only from Cloudflare's published ranges, so the
+5. **Reverse proxy** configured per the contract below, with TLS issued.
+6. **Firewall** allowing 80/443 only from Cloudflare's published ranges, so the
    origin cannot be reached around Cloudflare. Refresh those rules when
    Cloudflare publishes range changes.
 
