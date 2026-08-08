@@ -82,4 +82,4 @@ Suggested hosts: **Render** or **Railway** for the API, with **Railway**, **Supa
 4. Run `npx prisma db seed` once against production if you want the destinations/tours content pre-loaded. This does not create an administrator.
 5. Create the initial administrator separately with `npm run prisma:create-admin`, supplying a unique password through the host's secret-management facility.
 6. Swap the upload storage engine (see "File uploads" above) before real content editing begins — otherwise every uploaded image disappears on the next deploy.
-7. `helmet`, scoped `cors`, and `express-rate-limit` are already wired in `src/index.ts` — make sure the documented Nginx/Cloudflare proxy trust chain and `FRONTEND_ORIGIN` are configured.
+7. `helmet`, scoped `cors`, and `express-rate-limit` are already wired in `src/index.ts` — make sure the reverse-proxy trust chain documented in `deploy/README.md` and `FRONTEND_ORIGIN` are configured.

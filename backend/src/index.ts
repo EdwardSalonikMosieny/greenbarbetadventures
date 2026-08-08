@@ -24,10 +24,10 @@ const app = express();
 const port = Number.parseInt(process.env.PORT ?? '4000', 10);
 const host = process.env.HOST ?? '0.0.0.0';
 
-// Nginx is the only process allowed to connect to Express in production. Nginx
-// validates Cloudflare as its upstream proxy and replaces X-Forwarded-For with
-// the restored visitor address; trusting only loopback keeps direct clients from
-// spoofing the address used by express-rate-limit.
+// The reverse proxy is the only thing allowed to connect to Express in
+// production, and it sets X-Forwarded-For from the socket peer address. Trusting
+// only loopback means a header a client sent itself is never believed, so the
+// address express-rate-limit buckets on cannot be spoofed to evade the limit.
 configureProxyTrust(app);
 app.use(requestLogger);
 

@@ -63,10 +63,9 @@ export const ACTIVITIES: readonly Activity[] = [
     title: 'Dhow Sunset Cruise',
     description:
       'Sail the Indian Ocean on a traditional Swahili dhow as the sun sets over Mombasa’s coastline.',
-    imageUrl:
-      'https://www.greenbarbetadventures.com/wp-content/uploads/2026/03/mombasa-bg1-650x450.webp',
-    imageWidth: 650,
-    imageHeight: 450,
+    imageUrl: '/images/dhow-swahili-coast.jpg',
+    imageWidth: 1600,
+    imageHeight: 2000,
     isFeatured: false,
   },
   {
@@ -74,9 +73,9 @@ export const ACTIVITIES: readonly Activity[] = [
     title: 'Beach & Snorkeling',
     description:
       'White sand and coral reefs at Diani — snorkel the reef, then relax on Kenya’s premier stretch of coast.',
-    imageUrl: 'https://images.unsplash.com/photo-1677148435742-0944b14dc134?w=1024&q=75&auto=format&fit=crop',
-    imageWidth: 1024,
-    imageHeight: 1024,
+    imageUrl: '/images/coastal-beach-aerial.jpg',
+    imageWidth: 1600,
+    imageHeight: 1200,
     isFeatured: false,
   },
   {
@@ -84,10 +83,9 @@ export const ACTIVITIES: readonly Activity[] = [
     title: 'Bush Walks',
     description:
       'Guided walks through Aberdares’ moorland and forest, low and slow enough to notice what a vehicle drives past.',
-    imageUrl:
-      'https://www.greenbarbetadventures.com/wp-content/uploads/2024/02/Aberdares-2-1024x771.webp',
-    imageWidth: 1024,
-    imageHeight: 771,
+    imageUrl: '/images/aberdare3.jpeg',
+    imageWidth: 1280,
+    imageHeight: 576,
     isFeatured: false,
   },
 ] as const;

@@ -52,10 +52,10 @@ function About() {
 
           <FadeIn delay={0.15}>
             <OptimizedImage
-              src="https://www.greenbarbetadventures.com/wp-content/uploads/2026/03/photo-college2.webp"
-              width={512}
-              height={512}
-              alt="Green Barbet Adventures — the Naromoru/Equator marker near Mount Kenya, guests on the trail, and Kenyan wildlife"
+              src="/images/equator-sign-nanyuki.jpg"
+              width={1600}
+              height={1044}
+              alt="Travelers at the Equator sign outside Nanyuki, near Mount Kenya, with a local guide demonstrating the water-swirl trick"
               className={styles.collage}
             />
           </FadeIn>

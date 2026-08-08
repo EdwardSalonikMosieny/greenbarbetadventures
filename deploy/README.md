@@ -38,10 +38,10 @@ Neither is exposed directly — a reverse proxy in front terminates TLS and rout
 to the two ports.
 
 ```
-Browser → Cloudflare → reverse proxy (443)
-                          → /          → 127.0.0.1:5070  (greenbarbet-web-prod)
-                          → /api/      → 127.0.0.1:3070  (greenbarbet-prod)
-                          → /uploads/  → 127.0.0.1:3070  (greenbarbet-prod)
+Browser → reverse proxy (443)
+             → /          → 127.0.0.1:5070  (greenbarbet-web-prod)
+             → /api/      → 127.0.0.1:3070  (greenbarbet-prod)
+             → /uploads/  → 127.0.0.1:3070  (greenbarbet-prod)
 ```
 
 Both `ecosystem.config.production.json` files use relative paths, so no server
@@ -74,9 +74,10 @@ Set up once, outside this repo, before the first deploy:
    character random `JWT_SECRET`, and `FRONTEND_ORIGIN` listing the apex and
    `www` origins.
 5. **Reverse proxy** configured per the contract below, with TLS issued.
-6. **Firewall** allowing 80/443 only from Cloudflare's published ranges, so the
-   origin cannot be reached around Cloudflare. Refresh those rules when
-   Cloudflare publishes range changes.
+6. **Firewall** allowing 80/443 from the public internet. The domain resolves
+   straight to this server — there is no CDN or scrubbing layer in front — so
+   restricting these ports to a proxy provider's ranges would black-hole every
+   real visitor.
 
 The workflow creates `logs/` and `backend/uploads/` itself, and both are
 excluded from `rsync --delete`, so neither is wiped on deploy.
@@ -99,21 +100,24 @@ Requirements:
 - Leave caching of `/` and `/assets/` alone — `frontend/server.js` sets those
   headers itself, and overriding them will serve stale asset hashes after a
   deploy.
-- Restore the visitor address from `CF-Connecting-IP`, but **only** for peers
-  inside Cloudflare's ranges.
+- Set `X-Forwarded-For` from the **socket peer address** — the address the
+  connection actually came from. Do not copy it, or any vendor header like
+  `CF-Connecting-IP`, from what the client sent.
 
-That last point is load-bearing: the backend trusts only loopback as its proxy
-(`configureProxyTrust`), so whatever the proxy puts in `X-Forwarded-For` is what
-`express-rate-limit` treats as the client. If the proxy copies
-`CF-Connecting-IP` from an untrusted peer, rate limiting can be evaded.
+That last point is load-bearing. The backend trusts only loopback as its proxy
+(`configureProxyTrust`), so whatever the proxy puts in `X-Forwarded-For` is
+exactly what `express-rate-limit` buckets on. Clients connect to this server
+directly, so any client-supplied address header is attacker-controlled: honour
+one and a single caller can present a new "address" per request and never hit a
+rate limit.
 
-## Cloudflare
+## DNS
 
-Both the apex and `www` records are proxied (orange cloud). Once TLS is live at
-the origin, set SSL/TLS mode to **Full (strict)** and enable Authenticated
-Origin Pulls; a zone-level or per-hostname certificate is preferred because it
-is exclusive to this account. Confirm a direct request to the origin IP is
-rejected before considering deployment complete.
+The apex and `www` A records point straight at this server. There is no CDN,
+proxy provider or scrubbing layer in front, so the origin is the public
+endpoint: it terminates TLS itself, sees real client addresses on the socket,
+and is directly exposed to the internet. Firewall and rate-limit decisions
+should be made on that basis.
 
 ## First administrator
 

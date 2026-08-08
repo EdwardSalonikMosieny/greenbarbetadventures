@@ -399,10 +399,9 @@ export const DESTINATIONS: readonly Destination[] = [
       "The Mara Triangle and the private conservancies bordering the main reserve — Mara North, Naboisho, and Olare Motorogi among them — offer lower vehicle density and off-road game drives that aren't permitted inside the reserve itself, for a quieter, more flexible safari. A sunrise hot air balloon safari over the plains, landing to a champagne bush breakfast, is one of Kenya's most popular add-on experiences and a spectacular way to see the migration herds from above.",
       "The reserve takes its name from the Maasai people, who have grazed cattle across this landscape for generations and still live in and around it today. A visit to a Maasai manyatta (homestead) — with traditional beadwork, song, and the athletic adumu jumping dance — is a genuine, widely available add-on to a Mara safari and one of Kenya's best-known cultural experiences (see our Cultural Tours). The Mara is roughly a 45-minute scheduled flight from Nairobi, or a five- to six-hour drive via Narok, and rewards a visit either during the July–October migration or the drier, quieter January–February season.",
     ],
-    heroImageUrl:
-      'https://www.greenbarbetadventures.com/wp-content/uploads/2024/02/Mara-6-1024x577.webp',
-    heroImageWidth: 1024,
-    heroImageHeight: 577,
+    heroImageUrl: '/images/image13.jpeg',
+    heroImageWidth: 1472,
+    heroImageHeight: 1472,
     tourCount: 3,
     isFeatured: true,
   },
@@ -415,10 +414,9 @@ export const DESTINATIONS: readonly Destination[] = [
     details: [
       "Amboseli's dried Pleistocene lake bed and swamps, fed by underground rivers off Kilimanjaro, draw some of Africa's largest and best-studied free-ranging elephant herds — decades of research here mean some individual bulls and matriarchs are recognizable by name. On a clear morning, the park's flat plains give an almost uninterrupted view of Kilimanjaro's snow-capped summit rising across the border in Tanzania, making it one of the most photographed backdrops in East Africa.",
     ],
-    heroImageUrl:
-      'https://www.greenbarbetadventures.com/wp-content/uploads/2024/02/Amboseli-2-768x1023.webp',
-    heroImageWidth: 768,
-    heroImageHeight: 1023,
+    heroImageUrl: '/images/amboseli-elephants.jpg',
+    heroImageWidth: 1600,
+    heroImageHeight: 1473,
     isFeatured: true,
   },
   {
@@ -447,12 +445,12 @@ export const DESTINATIONS: readonly Destination[] = [
     details: [
       "South of Mombasa on Kenya's coast, Diani's beach is a long stretch of white coral sand backed by palm groves and a barrier reef that keeps the water calm and shallow close to shore — good for swimming, snorkeling, and kitesurfing alike. It's also one of the last strongholds of the rare Zanzibar red colobus and Angolan black-and-white colobus monkeys, both found in patches of coastal forest just behind the beachfront hotels.",
     ],
-    // No dedicated destination page exists on the old site for Diani (confirmed via its sitemap) —
-    // using a high-res curated placeholder instead, swappable with zero layout change.
-    heroImageUrl:
-      'https://images.unsplash.com/photo-1677148435742-0944b14dc134?w=1024&q=75&auto=format&fit=crop',
-    heroImageWidth: 1024,
-    heroImageHeight: 1024,
+    // Curated stock placeholder — the client's photo library has no coastal
+    // material. Served locally rather than hotlinked, and swappable for real
+    // Diani photography with zero layout change.
+    heroImageUrl: '/images/coastal-beach-aerial.jpg',
+    heroImageWidth: 1600,
+    heroImageHeight: 1200,
     isFeatured: false,
   },
   {
@@ -464,10 +462,9 @@ export const DESTINATIONS: readonly Destination[] = [
     details: [
       "Kenya's second city and its main port, Mombasa sits on an island connected to the mainland by bridges, causeways, and the Likoni ferry. Old Town's narrow streets mix Swahili, Arab, Portuguese, and British influences, still visible in the carved wooden doors and balconies around 16th-century Fort Jesus, a UNESCO World Heritage Site built by the Portuguese and fought over by Omani, British, and local forces for centuries after.",
     ],
-    heroImageUrl:
-      'https://www.greenbarbetadventures.com/wp-content/uploads/2026/03/mombasa-bg1-650x450.webp',
-    heroImageWidth: 650,
-    heroImageHeight: 450,
+    heroImageUrl: '/images/mombasa-old-town.jpg',
+    heroImageWidth: 1600,
+    heroImageHeight: 2400,
     tourCount: 1,
     isFeatured: true,
   },

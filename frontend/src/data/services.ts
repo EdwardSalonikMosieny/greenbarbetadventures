@@ -26,28 +26,26 @@ export const SERVICES: readonly Service[] = [
     title: 'Cultural Tours',
     description:
       'Step into Kenya’s living heritage — from Swahili Old Town in Mombasa to the traditions of the communities who call these landscapes home.',
-    imageUrl:
-      'https://www.greenbarbetadventures.com/wp-content/uploads/2026/03/mombasa-bg1-650x450.webp',
-    imageWidth: 650,
-    imageHeight: 450,
+    imageUrl: '/images/adumu-jumping-dance.jpg',
+    imageWidth: 1600,
+    imageHeight: 1200,
   },
   {
     slug: 'luxury-tours',
     title: 'Luxury Tours',
     description:
       'Unwind in style — white-sand escapes on Diani’s coastline, and premier lodges bordering some of Kenya’s wildest conservancies.',
-    imageUrl: 'https://images.unsplash.com/photo-1677148435742-0944b14dc134?w=1024&q=75&auto=format&fit=crop',
-    imageWidth: 1024,
-    imageHeight: 1024,
+    imageUrl: '/images/coastal-beach-aerial.jpg',
+    imageWidth: 1600,
+    imageHeight: 1200,
   },
   {
     slug: 'mountain-climbing-hikes',
     title: 'Mountain Climbing & Hikes',
     description:
       'Trek Mount Kenya’s glacial valleys and alpine lakes on a guided multi-day summit route to Point Lenana, Africa’s second-highest peak.',
-    imageUrl:
-      'https://www.greenbarbetadventures.com/wp-content/uploads/2024/02/Mount-Kenya-2-1024x683.webp',
-    imageWidth: 1024,
-    imageHeight: 683,
+    imageUrl: '/images/iamge5.jpeg',
+    imageWidth: 1472,
+    imageHeight: 1472,
   },
 ] as const;
