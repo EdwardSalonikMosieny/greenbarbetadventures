@@ -1,0 +1,32 @@
+{
+  "_comment": "PM2 resolves a relative script, log path and working directory against this file's own directory, so no absolute server path is hard-coded here. Start with: pm2 startOrReload backend/ecosystem.config.production.json --only greenbarbet-prod --update-env",
+  "apps": [
+    {
+      "name": "greenbarbet-prod",
+      "script": "./dist/index.js",
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": 3070,
+        "HOST": "127.0.0.1"
+      },
+      "instances": 1,
+      "exec_mode": "fork",
+      "merge_logs": true,
+      "autorestart": true,
+      "watch": false,
+      "max_memory_restart": "1G",
+      "error_file": "../logs/backend-error.log",
+      "out_file": "../logs/backend-out.log",
+      "log_date_format": "YYYY-MM-DD HH:mm:ss Z",
+      "kill_timeout": 10000,
+      "wait_ready": true,
+      "listen_timeout": 5000,
+      "max_restarts": 10,
+      "min_uptime": "30s",
+      "node_args": "--max-old-space-size=2048",
+      "ignore_watch": ["node_modules", "logs", "uploads", ".git"],
+      "watch_delay": 1000,
+      "restart_delay": 4000
+    }
+  ]
+}

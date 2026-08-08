@@ -74,4 +74,8 @@ app.use(errorHandler);
 
 app.listen(port, host, () => {
   console.log(`Green Barbet Adventures API listening on ${host}:${port}`);
+  // PM2 runs this app with `wait_ready: true`, so a reload only counts as
+  // successful once the socket is actually accepting connections. Without this
+  // signal PM2 stalls for the full `listen_timeout` on every deploy.
+  process.send?.('ready');
 });

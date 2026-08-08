@@ -107,17 +107,34 @@ test('administrator bootstrap rejects the former default and content seed create
   assert.doesNotMatch(seed, /prisma\.admin|ChangeMe123!/);
 });
 
-test('Cloudflare deployment overwrites client identity and blocks direct origin HTTP access', async () => {
-  const nginx = await readFile(
-    new URL('../../deploy/nginx-green-barbet.conf', import.meta.url),
-    'utf8',
-  );
-  const setup = await readFile(new URL('../../deploy/setup-vps.sh', import.meta.url), 'utf8');
+// The reverse proxy and server provisioning live outside this repo, so there is
+// nothing here to assert about them. What this repo still controls is that
+// neither process is reachable except through that proxy: both bind to loopback
+// only, and the API trusts loopback alone as its forwarding proxy.
+test('both processes bind to loopback only in production', async () => {
+  for (const app of ['../ecosystem.config.production.json', '../../frontend/ecosystem.config.production.json']) {
+    const config = JSON.parse(await readFile(new URL(app, import.meta.url), 'utf8'));
+    for (const entry of config.apps) {
+      assert.equal(entry.env.HOST, '127.0.0.1', `${entry.name} must not bind a public interface`);
+      assert.equal(entry.env.NODE_ENV, 'production');
+    }
+  }
+});
 
-  assert.match(nginx, /proxy_set_header X-Forwarded-For \$remote_addr;/);
-  assert.doesNotMatch(nginx, /\$proxy_add_x_forwarded_for/);
-  assert.match(setup, /real_ip_header CF-Connecting-IP;/);
-  assert.match(setup, /ufw allow proto tcp from "\$range" to any port 443/);
-  assert.match(setup, /ufw --force delete allow 'Nginx Full'/);
-  assert.match(setup, /HOST=127\.0\.0\.1/);
+test('the API trusts only loopback as its forwarding proxy', () => {
+  // Anything broader would let a direct client spoof the address that
+  // express-rate-limit buckets on, so the limiter could be evaded.
+  const app = express();
+  configureProxyTrust(app);
+  assert.equal(app.get('trust proxy'), 'loopback');
+});
+
+test('the frontend static server refuses to serve outside its build directory', async () => {
+  const server = await readFile(new URL('../../frontend/server.js', import.meta.url), 'utf8');
+
+  // The guard has to run on the *resolved* path — checking the raw URL for
+  // ".." misses encoded and normalised traversals.
+  assert.match(server, /path\.resolve\(/);
+  assert.match(server, /startsWith\(ROOT \+ path\.sep\)/);
+  assert.match(server, /includes\('\\0'\)/);
 });

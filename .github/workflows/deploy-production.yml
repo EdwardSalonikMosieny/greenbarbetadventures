@@ -1,0 +1,266 @@
+name: Deploy to Production
+
+# Push to main -> test both apps -> rsync the repo to the VPS -> rebuild and
+# reload both PM2 processes. See deploy/README.md for the one-time server and
+# secret setup this depends on.
+#
+# This is a monorepo, so a single workflow deploys the API and the site
+# together; the sibling Salama/Johjam projects split these across two repos.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  ENVIRONMENT: production
+  SSH_HOST: ${{ secrets.SSH_HOST }}
+  SSH_PORT: ${{ secrets.SSH_PORT }}
+  SSH_USER: ${{ secrets.SSH_USER }}
+  APP_DEPLOY_PATH: ${{ secrets.APP_DEPLOY_PATH }}
+  BACKEND_PORT: 3070
+  FRONTEND_PORT: 5070
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      # --- Backend ---
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Generate Prisma client
+        working-directory: ./backend
+        run: npm run prisma:generate
+
+      - name: Lint backend
+        working-directory: ./backend
+        run: npm run lint
+
+      - name: Test backend
+        working-directory: ./backend
+        run: npm test
+
+      - name: Build backend
+        working-directory: ./backend
+        run: npm run build
+
+      # --- Frontend ---
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Lint frontend
+        working-directory: ./frontend
+        run: npm run lint
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+
+      # --- Both ---
+      - name: Security audit
+        run: |
+          npm audit --prefix backend --omit=dev || true
+          npm audit --prefix frontend --omit=dev || true
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate required secrets
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          APP_DEPLOY_PATH: ${{ secrets.APP_DEPLOY_PATH }}
+        run: |
+          missing=0
+          for name in SSH_HOST SSH_PORT SSH_USER SSH_KEY APP_DEPLOY_PATH; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Missing required GitHub secret: $name"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "::error::Aborting deploy — set the missing repository secrets and re-run."
+            exit 1
+          fi
+          echo "All required secrets are present."
+
+      - uses: actions/checkout@v4
+
+      - name: Create deployment record
+        run: |
+          echo "Deploying commit: ${{ github.sha }}"
+          echo "Branch: ${{ github.ref }}"
+          echo "Timestamp: $(date -u)"
+
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: Add known hosts
+        env:
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          if [ -n "$SSH_KNOWN_HOSTS" ]; then
+            # Preferred: the host key is pinned in a repo secret, so a swapped
+            # or spoofed host fails the connection instead of being trusted.
+            echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+            echo "Using pinned host key from SSH_KNOWN_HOSTS."
+          else
+            # Fallback: no pinned key available, so scan the host at run time.
+            # This is trust-on-first-use for every run and does NOT protect
+            # against a man-in-the-middle. Populate SSH_KNOWN_HOSTS with the
+            # output below to close that gap — see deploy/README.md.
+            echo "::warning::SSH_KNOWN_HOSTS is not set — falling back to ssh-keyscan (trust-on-first-use, no MITM protection)."
+            ssh-keyscan -p "${SSH_PORT}" -H "${SSH_HOST}" >> ~/.ssh/known_hosts 2>/dev/null
+            if [ ! -s ~/.ssh/known_hosts ]; then
+              echo "::error::ssh-keyscan returned no host keys for ${SSH_HOST}:${SSH_PORT}."
+              exit 1
+            fi
+            echo "Scanned host keys (add these to the SSH_KNOWN_HOSTS secret):"
+            ssh-keyscan -p "${SSH_PORT}" "${SSH_HOST}" 2>/dev/null
+          fi
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy to production
+        run: |
+          echo "SSH target address candidates:"
+          getent ahosts "${SSH_HOST}" || true
+
+          ssh_retry() {
+            local max=3 delay=10 attempt=1
+            until ssh -4 -p "${SSH_PORT}" -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -o ConnectTimeout=30 "$@"; do
+              if [ $attempt -ge $max ]; then
+                echo "SSH command failed after $max attempts"
+                return 1
+              fi
+              echo "SSH attempt $attempt/$max failed, retrying in ${delay}s..."
+              attempt=$((attempt + 1))
+              sleep $delay
+            done
+          }
+
+          rsync_retry() {
+            local max=3 delay=10 attempt=1
+            until rsync -az --delete \
+              --exclude ".git" \
+              --exclude "node_modules" \
+              --exclude "backend/dist" \
+              --exclude "backend/uploads" \
+              --exclude "frontend/dist" \
+              --exclude "logs" \
+              --exclude ".env" \
+              --exclude ".env.production" \
+              -e "ssh -4 -p ${SSH_PORT} -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -o ConnectTimeout=30" \
+              ./ \
+              "${SSH_USER}@${SSH_HOST}:${APP_DEPLOY_PATH}/"; do
+              if [ $attempt -ge $max ]; then
+                echo "rsync failed after $max attempts"
+                return 1
+              fi
+              echo "rsync attempt $attempt/$max failed, retrying in ${delay}s..."
+              attempt=$((attempt + 1))
+              sleep $delay
+            done
+          }
+
+          if [ -z "${APP_DEPLOY_PATH}" ]; then
+            echo "::error::APP_DEPLOY_PATH is empty — refusing to rsync --delete (it would target the home directory and wipe it)."
+            exit 1
+          fi
+
+          rsync_retry
+
+          # Backend keeps its dev dependencies installed: the TypeScript build
+          # and the Prisma CLI (`migrate deploy`, `prisma:create-admin`) both
+          # live there, so `--omit=dev` would break the deploy and the admin
+          # tooling. The process is not internet-facing directly — Nginx is.
+          ssh_retry "${SSH_USER}@${SSH_HOST}" "mkdir -p ${APP_DEPLOY_PATH}/logs ${APP_DEPLOY_PATH}/backend/uploads"
+          ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/backend && npm ci"
+          ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/backend && npx prisma migrate deploy"
+          ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/backend && npm run build"
+
+          ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/frontend && npm ci"
+          ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/frontend && npm run build"
+
+          ssh_retry "${SSH_USER}@${SSH_HOST}" "pm2 startOrReload ${APP_DEPLOY_PATH}/backend/ecosystem.config.production.json --only greenbarbet-prod --update-env"
+          ssh_retry "${SSH_USER}@${SSH_HOST}" "pm2 startOrReload ${APP_DEPLOY_PATH}/frontend/ecosystem.config.production.json --only greenbarbet-web-prod --update-env"
+          ssh_retry "${SSH_USER}@${SSH_HOST}" "pm2 save"
+
+      - name: Health check — API
+        run: |
+          sleep 10
+          RETRY_COUNT=0
+          MAX_RETRIES=5
+
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            HTTP_CODE=$(ssh -4 -p "${SSH_PORT}" -o ConnectTimeout=15 "${SSH_USER}@${SSH_HOST}" \
+              "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:${BACKEND_PORT}/api/v1/health" 2>/dev/null || echo "000")
+
+            if [ "$HTTP_CODE" == "200" ] || [ "$HTTP_CODE" == "401" ]; then
+              echo "✓ API health check passed"
+              exit 0
+            fi
+
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            echo "API health check attempt $RETRY_COUNT/$MAX_RETRIES failed (HTTP: $HTTP_CODE)"
+
+            if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+              sleep 5
+            fi
+          done
+
+          echo "✗ API health check failed after $MAX_RETRIES attempts"
+          exit 1
+
+      - name: Health check — site
+        run: |
+          RETRY_COUNT=0
+          MAX_RETRIES=5
+
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            HTTP_CODE=$(ssh -4 -p "${SSH_PORT}" -o ConnectTimeout=15 "${SSH_USER}@${SSH_HOST}" \
+              "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:${FRONTEND_PORT}/" 2>/dev/null || echo "000")
+
+            if [ "$HTTP_CODE" == "200" ]; then
+              echo "✓ Site health check passed"
+              exit 0
+            fi
+
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            echo "Site health check attempt $RETRY_COUNT/$MAX_RETRIES failed (HTTP: $HTTP_CODE)"
+
+            if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+              sleep 5
+            fi
+          done
+
+          echo "✗ Site health check failed after $MAX_RETRIES attempts"
+          exit 1
+
+      - name: Notify Success
+        if: success()
+        run: |
+          echo "✓ Production deployment successful"
+          echo "Commit: ${{ github.sha }}"
+          echo "Time: $(date -u)"

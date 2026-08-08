@@ -46,7 +46,7 @@ npm install   # once, at the repo root — installs the `concurrently` dev-orche
 npm run dev   # runs both apps together, from the root
 ```
 
-This starts the backend (http://localhost:4000, health check `GET /api/v1/health`)
+This starts the backend (http://localhost:3070, health check `GET /api/v1/health`)
 and frontend (http://localhost:5173) together in one terminal, output
 color-labeled per app. **PostgreSQL must already be running** on its own — this
 doesn't start the database for you.

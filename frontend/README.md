@@ -16,7 +16,9 @@ npm run dev
 Edit `.env`:
 
 - `VITE_API_BASE_URL` — the backend API's base URL, including `/api/v1` (e.g.
-  `http://localhost:4000/api/v1` in dev, `https://api.yourdomain.com/api/v1` in prod)
+  `http://localhost:3070/api/v1` in dev, `https://greenbarbetadventures.com/api/v1`
+  in prod — the reverse proxy forwards `/api/` to the backend, so production is
+  same-origin)
 
 Runs at http://localhost:5173 by default.
 
