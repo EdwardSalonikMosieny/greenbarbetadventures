@@ -1,5 +1,5 @@
 {
-  "_comment": "PM2 resolves a relative script, log path and working directory against this file's own directory, so no absolute server path is hard-coded here. Start with: pm2 startOrReload backend/ecosystem.config.production.json --only greenbarbet-prod --update-env",
+  "_comment": "Paths are relative so no absolute server path is committed to this public repo. PM2 resolves them against the cwd of the pm2 command, NOT this file's location — so run it from the backend directory: cd <deploy>/backend && pm2 startOrReload ecosystem.config.production.json --only greenbarbet-prod --update-env",
   "apps": [
     {
       "name": "greenbarbet-prod",

@@ -214,8 +214,13 @@ jobs:
           ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/frontend && npm ci"
           ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/frontend && npm run build"
 
-          ssh_retry "${SSH_USER}@${SSH_HOST}" "pm2 startOrReload ${APP_DEPLOY_PATH}/backend/ecosystem.config.production.json --only greenbarbet-prod --update-env"
-          ssh_retry "${SSH_USER}@${SSH_HOST}" "pm2 startOrReload ${APP_DEPLOY_PATH}/frontend/ecosystem.config.production.json --only greenbarbet-web-prod --update-env"
+          # cd first: PM2 resolves an app's relative script and log paths against
+          # the cwd of the pm2 command, NOT the ecosystem file's own directory.
+          # An SSH command starts in the home directory, so invoking pm2 with a
+          # path to the config would look for ~/dist/index.js. Running from each
+          # app's directory is what keeps absolute server paths out of this repo.
+          ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/backend && pm2 startOrReload ecosystem.config.production.json --only greenbarbet-prod --update-env"
+          ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/frontend && pm2 startOrReload ecosystem.config.production.json --only greenbarbet-web-prod --update-env"
           ssh_retry "${SSH_USER}@${SSH_HOST}" "pm2 save"
 
       - name: Health check — API

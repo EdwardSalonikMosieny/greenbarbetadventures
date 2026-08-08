@@ -44,9 +44,11 @@ Browser → Cloudflare → reverse proxy (443)
                           → /uploads/  → 127.0.0.1:3070  (greenbarbet-prod)
 ```
 
-Both `ecosystem.config.production.json` files use paths relative to their own
-location, so PM2 works from whatever directory the deploy targets and no server
-path is committed.
+Both `ecosystem.config.production.json` files use relative paths, so no server
+path is committed to this public repo. PM2 resolves those against **the cwd of
+the `pm2` command**, not the config file's location — so always `cd` into the
+app's own directory before starting or reloading it. Passing PM2 a path to the
+config from somewhere else makes it look for the script in the wrong place.
 
 ### What the frontend process is
 
@@ -184,11 +186,17 @@ Run from the deploy directory:
 
 ```bash
 git pull
-cd backend  && npm ci && npx prisma migrate deploy && npm run build
-cd ../frontend && npm ci && npm run build
-cd ..
-pm2 startOrReload backend/ecosystem.config.production.json  --only greenbarbet-prod --update-env
-pm2 startOrReload frontend/ecosystem.config.production.json --only greenbarbet-web-prod --update-env
+
+# npm ci wipes node_modules, which is where the Prisma client is generated;
+# backend/package.json regenerates it on postinstall.
+cd backend
+npm ci && npx prisma migrate deploy && npm run build
+pm2 startOrReload ecosystem.config.production.json --only greenbarbet-prod --update-env
+
+cd ../frontend
+npm ci && npm run build
+pm2 startOrReload ecosystem.config.production.json --only greenbarbet-web-prod --update-env
+
 pm2 save
 ```
 
