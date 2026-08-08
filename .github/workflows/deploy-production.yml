@@ -149,130 +149,146 @@ jobs:
           fi
           chmod 600 ~/.ssh/known_hosts
 
-      - name: Deploy to production
+      - name: Open the shared SSH connection
         run: |
+          # Everything after this reuses ONE SSH connection via ControlMaster:
+          # rsync, the deploy script and the health checks all multiplex over the
+          # same socket, so the server sees a single session and a single auth.
+          # The alias also keeps host, port and user out of every later command.
+          cat >> ~/.ssh/config <<EOF
+          Host deploy-target
+            HostName ${SSH_HOST}
+            Port ${SSH_PORT}
+            User ${SSH_USER}
+            AddressFamily inet
+            ControlMaster auto
+            ControlPath ~/.ssh/cm-%r@%h:%p
+            ControlPersist 10m
+            ServerAliveInterval 30
+            ServerAliveCountMax 3
+            ConnectTimeout 30
+          EOF
+          chmod 600 ~/.ssh/config
+
           echo "SSH target address candidates:"
           getent ahosts "${SSH_HOST}" || true
 
-          ssh_retry() {
-            local max=3 delay=10 attempt=1
-            until ssh -4 -p "${SSH_PORT}" -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -o ConnectTimeout=30 "$@"; do
-              if [ $attempt -ge $max ]; then
-                echo "SSH command failed after $max attempts"
-                return 1
-              fi
-              echo "SSH attempt $attempt/$max failed, retrying in ${delay}s..."
-              attempt=$((attempt + 1))
-              sleep $delay
-            done
-          }
+          # Establish the master connection up front so a failure here is
+          # reported as a connection problem rather than a deploy problem.
+          ssh -N -f deploy-target
+          ssh -O check deploy-target
 
-          rsync_retry() {
-            local max=3 delay=10 attempt=1
-            until rsync -az --delete \
-              --exclude ".git" \
-              --exclude "node_modules" \
-              --exclude "backend/dist" \
-              --exclude "backend/uploads" \
-              --exclude "frontend/dist" \
-              --exclude "logs" \
-              --exclude ".env" \
-              --exclude ".env.production" \
-              -e "ssh -4 -p ${SSH_PORT} -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -o ConnectTimeout=30" \
-              ./ \
-              "${SSH_USER}@${SSH_HOST}:${APP_DEPLOY_PATH}/"; do
-              if [ $attempt -ge $max ]; then
-                echo "rsync failed after $max attempts"
-                return 1
-              fi
-              echo "rsync attempt $attempt/$max failed, retrying in ${delay}s..."
-              attempt=$((attempt + 1))
-              sleep $delay
-            done
-          }
-
+      - name: Deploy to production
+        run: |
           if [ -z "${APP_DEPLOY_PATH}" ]; then
             echo "::error::APP_DEPLOY_PATH is empty — refusing to rsync --delete (it would target the home directory and wipe it)."
             exit 1
           fi
 
-          rsync_retry
+          retry() {
+            local label="$1"; shift
+            local max=3 delay=10 attempt=1
+            until "$@"; do
+              if [ $attempt -ge $max ]; then
+                echo "${label} failed after $max attempts"
+                return 1
+              fi
+              echo "${label} attempt $attempt/$max failed, retrying in ${delay}s..."
+              attempt=$((attempt + 1))
+              sleep $delay
+            done
+          }
 
-          # Backend keeps its dev dependencies installed: the TypeScript build
-          # and the Prisma CLI (`migrate deploy`, `prisma:create-admin`) both
-          # live there, so `--omit=dev` would break the deploy and the admin
-          # tooling. The process is not internet-facing — the proxy is.
-          ssh_retry "${SSH_USER}@${SSH_HOST}" "mkdir -p ${APP_DEPLOY_PATH}/logs ${APP_DEPLOY_PATH}/backend/uploads"
-          ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/backend && npm ci"
-          # Prisma 7 no longer generates the client on postinstall, so without
-          # this @prisma/client is still a stub and `tsc` fails on the missing
-          # PrismaClient export. Must run before both migrate and build.
-          ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/backend && npx prisma generate"
-          ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/backend && npx prisma migrate deploy"
-          ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/backend && npm run build"
+          retry rsync rsync -az --delete \
+            --exclude ".git" \
+            --exclude "node_modules" \
+            --exclude "backend/dist" \
+            --exclude "backend/uploads" \
+            --exclude "frontend/dist" \
+            --exclude "logs" \
+            --exclude ".env" \
+            --exclude ".env.production" \
+            -e ssh \
+            ./ \
+            "deploy-target:${APP_DEPLOY_PATH}/"
 
-          ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/frontend && npm ci"
-          ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/frontend && npm run build"
+          # One remote shell for the whole build-and-reload sequence, rather than
+          # a connection per command. `set -e` stops it at the first failure, so
+          # a broken build never reaches pm2 and the running site is left alone.
+          #
+          # Backend dev dependencies stay installed: the TypeScript build and the
+          # Prisma CLI both live there, so `--omit=dev` would break the deploy and
+          # `prisma:create-admin`. The process is not internet-facing — the proxy is.
+          #
+          # `cd` before each pm2 call is load-bearing: PM2 resolves an app's
+          # relative script and log paths against the cwd of the pm2 command, not
+          # against the ecosystem file's own location.
+          retry "remote deploy" ssh deploy-target "
+            set -e
+            cd '${APP_DEPLOY_PATH}'
+            mkdir -p logs backend/uploads
 
-          # cd first: PM2 resolves an app's relative script and log paths against
-          # the cwd of the pm2 command, NOT the ecosystem file's own directory.
-          # An SSH command starts in the home directory, so invoking pm2 with a
-          # path to the config would look for ~/dist/index.js. Running from each
-          # app's directory is what keeps absolute server paths out of this repo.
-          ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/backend && pm2 startOrReload ecosystem.config.production.json --only greenbarbet-prod --update-env"
-          ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/frontend && pm2 startOrReload ecosystem.config.production.json --only greenbarbet-web-prod --update-env"
-          ssh_retry "${SSH_USER}@${SSH_HOST}" "pm2 save"
+            cd backend
+            npm ci
+            # backend/package.json regenerates the Prisma client on postinstall,
+            # but this is repeated explicitly because npm ci deletes the client
+            # (it lives in node_modules) and a stub one fails the build in a way
+            # that is not obviously about Prisma at all.
+            npx prisma generate
+            npx prisma migrate deploy
+            npm run build
+            pm2 startOrReload ecosystem.config.production.json --only greenbarbet-prod --update-env
 
-      - name: Health check — API
+            cd ../frontend
+            npm ci
+            npm run build
+            pm2 startOrReload ecosystem.config.production.json --only greenbarbet-web-prod --update-env
+
+            pm2 save
+          "
+
+      - name: Health check
         run: |
           sleep 10
           RETRY_COUNT=0
           MAX_RETRIES=5
 
           while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-            HTTP_CODE=$(ssh -4 -p "${SSH_PORT}" -o ConnectTimeout=15 "${SSH_USER}@${SSH_HOST}" \
-              "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:${BACKEND_PORT}/api/v1/health" 2>/dev/null || echo "000")
+            # Both ports checked in a single remote shell, so one attempt is one
+            # round trip. 401 counts as healthy for the API: it means Express is
+            # answering and the auth middleware is doing its job.
+            RESULT=$(ssh deploy-target "
+              api=\$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:${BACKEND_PORT}/api/v1/health || echo 000)
+              web=\$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:${FRONTEND_PORT}/ || echo 000)
+              echo \"\${api} \${web}\"
+            " 2>/dev/null || echo "000 000")
 
-            if [ "$HTTP_CODE" == "200" ] || [ "$HTTP_CODE" == "401" ]; then
-              echo "✓ API health check passed"
+            API_CODE=$(echo "$RESULT" | awk '{print $1}')
+            WEB_CODE=$(echo "$RESULT" | awk '{print $2}')
+
+            API_OK=false; WEB_OK=false
+            { [ "$API_CODE" = "200" ] || [ "$API_CODE" = "401" ]; } && API_OK=true
+            [ "$WEB_CODE" = "200" ] && WEB_OK=true
+
+            if $API_OK && $WEB_OK; then
+              echo "✓ API (${API_CODE}) and site (${WEB_CODE}) both healthy"
               exit 0
             fi
 
             RETRY_COUNT=$((RETRY_COUNT + 1))
-            echo "API health check attempt $RETRY_COUNT/$MAX_RETRIES failed (HTTP: $HTTP_CODE)"
+            echo "Health check attempt $RETRY_COUNT/$MAX_RETRIES — API: ${API_CODE}, site: ${WEB_CODE}"
 
             if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
               sleep 5
             fi
           done
 
-          echo "✗ API health check failed after $MAX_RETRIES attempts"
+          echo "✗ Health check failed after $MAX_RETRIES attempts (API: ${API_CODE}, site: ${WEB_CODE})"
           exit 1
 
-      - name: Health check — site
-        run: |
-          RETRY_COUNT=0
-          MAX_RETRIES=5
-
-          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-            HTTP_CODE=$(ssh -4 -p "${SSH_PORT}" -o ConnectTimeout=15 "${SSH_USER}@${SSH_HOST}" \
-              "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:${FRONTEND_PORT}/" 2>/dev/null || echo "000")
-
-            if [ "$HTTP_CODE" == "200" ]; then
-              echo "✓ Site health check passed"
-              exit 0
-            fi
-
-            RETRY_COUNT=$((RETRY_COUNT + 1))
-            echo "Site health check attempt $RETRY_COUNT/$MAX_RETRIES failed (HTTP: $HTTP_CODE)"
-
-            if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
-              sleep 5
-            fi
-          done
-
-          echo "✗ Site health check failed after $MAX_RETRIES attempts"
-          exit 1
+      - name: Close the shared SSH connection
+        if: always()
+        run: ssh -O exit deploy-target 2>/dev/null || true
 
       - name: Notify Success
         if: success()
