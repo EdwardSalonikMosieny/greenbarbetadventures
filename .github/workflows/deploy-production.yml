@@ -24,6 +24,13 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      # prisma.config.ts resolves DATABASE_URL eagerly, so `prisma generate`
+      # fails without one even though it never opens a connection. CI has no
+      # .env, so a throwaway value is supplied here. Nothing in this job talks
+      # to a database — the tests inject fakes rather than query one — so this
+      # string is never dialled. The real credentials live only on the server.
+      DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/ci?schema=public
     steps:
       - uses: actions/checkout@v4
 
