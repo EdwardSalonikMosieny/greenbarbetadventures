@@ -87,6 +87,13 @@ function Footer() {
 
           <PaymentBadges />
         </div>
+
+        <p className={styles.credit}>
+          Powered and maintained by{' '}
+          <a href="https://etechcreatives.co.ke" target="_blank" rel="noopener noreferrer">
+            etechcreatives.co.ke
+          </a>
+        </p>
       </Container>
     </footer>
   );
