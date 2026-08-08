@@ -86,11 +86,11 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
           SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           APP_DEPLOY_PATH: ${{ secrets.APP_DEPLOY_PATH }}
         run: |
           missing=0
-          for name in SSH_HOST SSH_PORT SSH_USER SSH_KEY APP_DEPLOY_PATH; do
+          for name in SSH_HOST SSH_PORT SSH_USER SSH_PRIVATE_KEY APP_DEPLOY_PATH; do
             if [ -z "${!name}" ]; then
               echo "::error::Missing required GitHub secret: $name"
               missing=1
@@ -113,7 +113,7 @@ jobs:
       - name: Add SSH key
         uses: webfactory/ssh-agent@v0.9.1
         with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Add known hosts
         env:
@@ -194,7 +194,7 @@ jobs:
           # Backend keeps its dev dependencies installed: the TypeScript build
           # and the Prisma CLI (`migrate deploy`, `prisma:create-admin`) both
           # live there, so `--omit=dev` would break the deploy and the admin
-          # tooling. The process is not internet-facing directly — Nginx is.
+          # tooling. The process is not internet-facing — the proxy is.
           ssh_retry "${SSH_USER}@${SSH_HOST}" "mkdir -p ${APP_DEPLOY_PATH}/logs ${APP_DEPLOY_PATH}/backend/uploads"
           ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/backend && npm ci"
           ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/backend && npx prisma migrate deploy"

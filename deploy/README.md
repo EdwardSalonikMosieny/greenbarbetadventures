@@ -141,7 +141,7 @@ ever have been exposed.
 | `SSH_HOST`        | Server IP or hostname                                          |
 | `SSH_PORT`        | SSH port                                                       |
 | `SSH_USER`        | Account that owns the deploy directory and can run `pm2`       |
-| `SSH_KEY`         | The **private** half of the deploy keypair                     |
+| `SSH_PRIVATE_KEY` | The **private** half of the deploy keypair                     |
 | `APP_DEPLOY_PATH` | Absolute path to the deploy directory                          |
 | `SSH_KNOWN_HOSTS` | _Optional but recommended_ — see below                         |
 
