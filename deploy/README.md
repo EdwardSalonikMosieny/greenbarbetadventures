@@ -38,9 +38,9 @@ generated password; generates a random `JWT_SECRET`; builds both apps;
 starts the backend under PM2; and configures Nginx. It prints next steps at
 the end (DNS + certbot).
 
-### 2. Point DNS at the server
+### 2. Put both public hosts behind Cloudflare
 
-The domain's DNS is managed at hosting.com. In its DNS zone editor, add:
+In Cloudflare DNS, confirm/add these records and enable proxying (orange cloud):
 
 | Type | Name | Value            |
 | ---- | ---- | ---------------- |
@@ -51,6 +51,11 @@ If the domain was previously pointed at hosting.com's own shared hosting
 (e.g. an old WordPress install), replace those records rather than adding
 alongside them. DNS can take anywhere from a few minutes to a few hours to
 propagate.
+
+The VPS firewall accepts HTTP(S) only from the current Cloudflare ranges fetched
+during provisioning, so the origin cannot be used to bypass Cloudflare. If
+Cloudflare publishes range changes, rerun the range/firewall portion of
+`setup-vps.sh` before the new ranges enter service.
 
 ### 3. Issue the SSL certificate
 
@@ -63,7 +68,28 @@ certbot --nginx -d greenbarbetadventures.com -d www.greenbarbetadventures.com
 
 Certbot edits the Nginx config to add HTTPS and sets up auto-renewal.
 
-### 4. Wire up GitHub Actions auto-deploy
+Then set Cloudflare SSL/TLS mode to **Full (strict)**. Enable Authenticated Origin
+Pulls as an additional origin-authentication layer; a zone-level or per-hostname
+certificate is preferred because it is exclusive to this account. Test that a
+direct request to the origin IP is rejected before considering deployment complete.
+
+### 4. Create the first administrator
+
+The content seed no longer installs a default administrator. On the VPS, supply a
+unique secret without saving it in shell history:
+
+```bash
+cd /var/www/green-barbet-adventures/backend
+read -rsp 'Admin password: ' ADMIN_PASSWORD && echo
+export ADMIN_PASSWORD
+ADMIN_EMAIL='admin@greenbarbetadventures.com' ADMIN_NAME='Green Barbet Admin' npm run prisma:create-admin
+unset ADMIN_PASSWORD
+```
+
+Use at least 16 random characters. Rotate `JWT_SECRET` as well if the prior default
+account may ever have been exposed.
+
+### 5. Wire up GitHub Actions auto-deploy
 
 A dedicated deploy keypair was generated for this
 (`~/.ssh/gba_deploy` / `gba_deploy.pub`) and its public half added to the

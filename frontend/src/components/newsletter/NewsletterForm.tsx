@@ -12,9 +12,7 @@ const newsletterSchema = z.object({
 type NewsletterFormValues = z.infer<typeof newsletterSchema>;
 
 interface SubscriberResponse {
-  id: string;
-  email: string;
-  subscribedAt: string;
+  message: string;
 }
 
 function NewsletterForm() {

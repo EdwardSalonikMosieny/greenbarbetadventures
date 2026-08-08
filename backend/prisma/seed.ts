@@ -1,9 +1,7 @@
 // Seeds the database with real Green Barbet Adventures content per CLAUDE.md.
 // Run with: npm run prisma:seed
-import { PrismaClient, TourType } from '@prisma/client';
-import bcrypt from 'bcrypt';
-
-const prisma = new PrismaClient();
+import { TourType } from '@prisma/client';
+import prisma from '../src/config/prisma';
 
 // Mostly royalty-free stand-ins sized for hero/card use, swapped for real photography
 // as it becomes available (Solio already is — see below) with no layout changes
@@ -30,18 +28,6 @@ const PLACEHOLDER = {
 } as const;
 
 async function main() {
-  // --- Admin (dev-only seed account; change the password immediately outside of dev) ---
-  const passwordHash = await bcrypt.hash('ChangeMe123!', 12);
-  await prisma.admin.upsert({
-    where: { email: 'admin@greenbarbetadventures.com' },
-    update: {},
-    create: {
-      email: 'admin@greenbarbetadventures.com',
-      passwordHash,
-      name: 'Green Barbet Admin',
-    },
-  });
-
   // --- Destinations (real, confirmed list only — see CLAUDE.md) ---
   const destinationData = [
     {

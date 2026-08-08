@@ -39,6 +39,41 @@ echo "== Installing Nginx =="
 apt-get install -y nginx
 systemctl enable nginx
 
+echo "== Fetching and validating Cloudflare proxy ranges =="
+CF_RANGE_DIR="$(mktemp -d)"
+trap 'rm -rf "$CF_RANGE_DIR"' EXIT
+curl --proto '=https' --tlsv1.2 -fsS https://www.cloudflare.com/ips-v4 -o "${CF_RANGE_DIR}/ips-v4"
+curl --proto '=https' --tlsv1.2 -fsS https://www.cloudflare.com/ips-v6 -o "${CF_RANGE_DIR}/ips-v6"
+mapfile -t CLOUDFLARE_IPV4_RANGES < "${CF_RANGE_DIR}/ips-v4"
+mapfile -t CLOUDFLARE_IPV6_RANGES < "${CF_RANGE_DIR}/ips-v6"
+
+if [ "${#CLOUDFLARE_IPV4_RANGES[@]}" -eq 0 ] || [ "${#CLOUDFLARE_IPV6_RANGES[@]}" -eq 0 ]; then
+  echo "Cloudflare returned an empty IP range list; refusing to configure the origin." >&2
+  exit 1
+fi
+
+for range in "${CLOUDFLARE_IPV4_RANGES[@]}"; do
+  if [[ ! "$range" =~ ^[0-9.]+/[0-9]{1,2}$ ]]; then
+    echo "Invalid Cloudflare IPv4 CIDR: $range" >&2
+    exit 1
+  fi
+done
+for range in "${CLOUDFLARE_IPV6_RANGES[@]}"; do
+  if [[ ! "$range" =~ ^[0-9A-Fa-f:]+/[0-9]{1,3}$ ]]; then
+    echo "Invalid Cloudflare IPv6 CIDR: $range" >&2
+    exit 1
+  fi
+done
+
+{
+  echo "# Generated from Cloudflare's published ranges by deploy/setup-vps.sh."
+  for range in "${CLOUDFLARE_IPV4_RANGES[@]}" "${CLOUDFLARE_IPV6_RANGES[@]}"; do
+    echo "set_real_ip_from ${range};"
+  done
+  echo "real_ip_header CF-Connecting-IP;"
+  echo "real_ip_recursive on;"
+} > /etc/nginx/conf.d/cloudflare-real-ip.conf
+
 echo "== Installing PM2 =="
 npm install -g pm2
 
@@ -47,7 +82,13 @@ apt-get install -y certbot python3-certbot-nginx
 
 echo "== Configuring firewall =="
 ufw allow OpenSSH
-ufw allow 'Nginx Full'
+# The public origin must not be reachable around Cloudflare. This also makes
+# CF-Connecting-IP trustworthy at Nginx because only Cloudflare can connect.
+ufw --force delete allow 'Nginx Full' || true
+for range in "${CLOUDFLARE_IPV4_RANGES[@]}" "${CLOUDFLARE_IPV6_RANGES[@]}"; do
+  ufw allow proto tcp from "$range" to any port 80
+  ufw allow proto tcp from "$range" to any port 443
+done
 ufw --force enable
 
 echo "== Creating PostgreSQL database and user =="
@@ -70,6 +111,8 @@ echo "== Writing backend/.env =="
 JWT_SECRET="$(openssl rand -base64 48 | tr -dc 'A-Za-z0-9' | head -c 64)"
 cat > "${APP_DIR}/backend/.env" <<EOF
 PORT=4000
+HOST=127.0.0.1
+NODE_ENV=production
 FRONTEND_ORIGIN=https://${DOMAIN},https://www.${DOMAIN}
 DATABASE_URL="postgresql://${DB_USER}:${DB_PASSWORD}@localhost:5432/${DB_NAME}?schema=public"
 JWT_SECRET=${JWT_SECRET}
@@ -120,6 +163,9 @@ echo "Nginx serving ${APP_DIR}/frontend/dist and proxying /api + /uploads"
 echo ""
 echo "NEXT STEPS:"
 echo "1. Point ${DOMAIN}'s DNS A record at this server's IP."
-echo "2. Once DNS has propagated, run:"
+echo "2. Proxy the apex and www DNS records through Cloudflare (orange cloud)."
+echo "3. Once DNS has propagated, run:"
 echo "   certbot --nginx -d ${DOMAIN} -d www.${DOMAIN}"
+echo "4. In Cloudflare, select Full (strict) TLS and enable Authenticated Origin Pulls."
+echo "5. Create the first admin with a unique secret (see deploy/README.md)."
 echo "=========================================================="

@@ -2,7 +2,6 @@ import path from 'node:path';
 import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
-import type { NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
 import newsletterRoutes from './routes/newsletter.routes';
 import bookingInquiryRoutes from './routes/booking-inquiry.routes';
@@ -17,9 +16,20 @@ import adminBookingInquiriesRoutes from './routes/admin/booking-inquiries.routes
 import adminNewsletterSubscribersRoutes from './routes/admin/newsletter-subscribers.routes';
 import adminTestimonialsRoutes from './routes/admin/testimonials.routes';
 import adminStatsRoutes from './routes/admin/stats.routes';
+import { configureProxyTrust } from './config/http';
+import { errorHandler } from './middleware/errorHandler';
+import { requestLogger } from './middleware/requestLogger';
 
 const app = express();
-const port = process.env.PORT ?? 4000;
+const port = Number.parseInt(process.env.PORT ?? '4000', 10);
+const host = process.env.HOST ?? '0.0.0.0';
+
+// Nginx is the only process allowed to connect to Express in production. Nginx
+// validates Cloudflare as its upstream proxy and replaces X-Forwarded-For with
+// the restored visitor address; trusting only loopback keeps direct clients from
+// spoofing the address used by express-rate-limit.
+configureProxyTrust(app);
+app.use(requestLogger);
 
 app.use(
   helmet({
@@ -59,15 +69,9 @@ app.use('/api/v1/admin/newsletter-subscribers', adminNewsletterSubscribersRoutes
 app.use('/api/v1/admin/testimonials', adminTestimonialsRoutes);
 app.use('/api/v1/admin/stats', adminStatsRoutes);
 
-// Catch-all error handler — must be registered last, after every route. The unused
-// 4th param is required: Express only treats a handler as error-handling middleware
-// when it has arity 4.
-app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
-  void _next;
-  console.error(err);
-  res.status(500).json({ error: 'Internal server error' });
-});
+// Error middleware must remain last so it receives failures from every route.
+app.use(errorHandler);
 
-app.listen(port, () => {
-  console.log(`Green Barbet Adventures API listening on port ${port}`);
+app.listen(port, host, () => {
+  console.log(`Green Barbet Adventures API listening on ${host}:${port}`);
 });

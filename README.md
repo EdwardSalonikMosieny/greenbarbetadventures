@@ -59,9 +59,9 @@ cd backend  && npm run dev
 cd frontend && npm run dev   # in a second terminal
 ```
 
-Admin dashboard: `/admin/login` — seeded dev login is
-`admin@greenbarbetadventures.com` / `ChangeMe123!` (change this before using any
-non-local database, see backend README).
+Admin dashboard: `/admin/login`. Create or rotate an administrator separately from
+the content seed with `npm run prisma:create-admin`; see the backend README for the
+required secret environment variables.
 
 ## Linting & formatting
 
@@ -117,7 +117,7 @@ the frontend side).
 - [ ] Fresh `JWT_SECRET` generated for production — never reuse the local dev value
 - [ ] `DATABASE_URL` points at the production database, not a local/dev one
 - [ ] `npx prisma migrate deploy` run against production **before** first traffic (not `migrate dev` — see backend README)
-- [ ] Seeded admin password (`ChangeMe123!`) changed on any non-local database
+- [ ] Initial admin created separately with `npm run prisma:create-admin` and a unique secret
 - [ ] Upload storage swapped from local disk to S3/Cloudinary (`backend/src/middleware/upload.ts`) — local disk storage does not persist across redeploys on most PaaS hosts
 - [ ] `FRONTEND_ORIGIN` (backend) and `VITE_API_BASE_URL` (frontend) both set to the real deployed URLs, not localhost
 - [ ] Frontend built with `npm run build` and served via a host that applies the SPA fallback rewrite (`vercel.json` / `public/_redirects` already provided — confirm the host actually picks one up)

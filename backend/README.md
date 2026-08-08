@@ -24,14 +24,20 @@ npm run prisma:migrate
 # Regenerate the Prisma Client after schema changes
 npm run prisma:generate
 
-# Populate the database with real Green Barbet Adventures content (destinations, tours, a dev admin account)
+# Populate the database with destinations, tours, and other public content
 npm run prisma:seed
+
+# Create or rotate an administrator using secrets supplied at execution time
+ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD='<at-least-16-random-characters>' npm run prisma:create-admin
 
 # Browse the database in a local GUI
 npm run prisma:studio
 ```
 
-The dev seed creates an admin login of `admin@greenbarbetadventures.com` / `ChangeMe123!` — **change this password before using any non-local database** (there's no "forgot password" flow yet; update it directly via `prisma:studio` or a one-off script that writes a new bcrypt hash).
+The content seed never creates an administrator. Use `npm run prisma:create-admin` with
+`ADMIN_EMAIL`, `ADMIN_PASSWORD`, and optionally `ADMIN_NAME`. The command rejects short and known
+default passwords and can also rotate an existing administrator. Supply the password through a
+protected environment or secret manager rather than committing it.
 
 ## Running
 
@@ -43,7 +49,10 @@ npm run start   # runs the compiled build
 
 ## File uploads
 
-`multer` writes to `/backend/uploads` in dev, served statically at `/uploads/*`. **This does not survive deployment** on most PaaS hosts (Render, Railway, etc. use ephemeral filesystems — uploads vanish on every redeploy/restart). Before going live, swap `src/middleware/upload.ts`'s disk storage for an S3 or Cloudinary storage engine — it's the only file that needs to change; every route already just stores whatever URL the upload handler returns.
+Uploads are held in memory, decoded, stripped of metadata, and re-encoded as server-named WEBP files
+before being written to `/backend/uploads` and served at `/uploads/*`. This local directory does not
+survive deployment on most PaaS hosts; use an isolated object-storage/media origin when deploying to
+an ephemeral platform.
 
 ## API
 
@@ -70,6 +79,7 @@ Suggested hosts: **Render** or **Railway** for the API, with **Railway**, **Supa
 1. Set every variable from `.env.example` in the host's environment settings — especially `DATABASE_URL` (pointing at the production database), a freshly-generated `JWT_SECRET` (**do not reuse the local dev one**), and `FRONTEND_ORIGIN` (the deployed frontend's exact URL, e.g. `https://greenbarbetadventures.com` — no trailing slash, no wildcard).
 2. Build command: `npm run build`. Start command: `npm run start`.
 3. Run migrations against the production database **before** the app first starts serving traffic: `npx prisma migrate deploy` (not `migrate dev` — that command is interactive and meant for local development only). Most hosts support this as a "release" or "pre-deploy" command; otherwise run it manually once via the host's shell/console.
-4. Run `npx prisma db seed` once against production if you want the real destinations/tours content pre-loaded — then **immediately change the seeded admin password** (see above).
-5. Swap the upload storage engine (see "File uploads" above) before real content editing begins — otherwise every uploaded image disappears on the next deploy.
-6. `helmet`, scoped `cors`, and `express-rate-limit` are already wired in `src/index.ts` — no extra config needed there, just make sure `FRONTEND_ORIGIN` is correct or every request from the real frontend will be CORS-blocked.
+4. Run `npx prisma db seed` once against production if you want the destinations/tours content pre-loaded. This does not create an administrator.
+5. Create the initial administrator separately with `npm run prisma:create-admin`, supplying a unique password through the host's secret-management facility.
+6. Swap the upload storage engine (see "File uploads" above) before real content editing begins — otherwise every uploaded image disappears on the next deploy.
+7. `helmet`, scoped `cors`, and `express-rate-limit` are already wired in `src/index.ts` — make sure the documented Nginx/Cloudflare proxy trust chain and `FRONTEND_ORIGIN` are configured.
