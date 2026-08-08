@@ -139,13 +139,17 @@ jobs:
             # against a man-in-the-middle. Populate SSH_KNOWN_HOSTS with the
             # output below to close that gap — see deploy/README.md.
             echo "::warning::SSH_KNOWN_HOSTS is not set — falling back to ssh-keyscan (trust-on-first-use, no MITM protection)."
-            ssh-keyscan -p "${SSH_PORT}" -H "${SSH_HOST}" >> ~/.ssh/known_hosts 2>/dev/null
-            if [ ! -s ~/.ssh/known_hosts ]; then
+            # Scanned once, into a variable: scanning a second time just to print
+            # the keys made a transient network failure fatal under `bash -e`.
+            # Left unhashed so the output can be pasted straight into the secret.
+            scanned=$(ssh-keyscan -p "${SSH_PORT}" "${SSH_HOST}" 2>/dev/null || true)
+            if [ -z "$scanned" ]; then
               echo "::error::ssh-keyscan returned no host keys for ${SSH_HOST}:${SSH_PORT}."
               exit 1
             fi
+            printf '%s\n' "$scanned" >> ~/.ssh/known_hosts
             echo "Scanned host keys (add these to the SSH_KNOWN_HOSTS secret):"
-            ssh-keyscan -p "${SSH_PORT}" "${SSH_HOST}" 2>/dev/null
+            printf '%s\n' "$scanned"
           fi
           chmod 600 ~/.ssh/known_hosts
 
