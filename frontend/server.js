@@ -57,6 +57,13 @@ const MIME_TYPES = {
 };
 
 /**
+ * Paths the reverse proxy is supposed to send to the backend, never to this
+ * process. Listed here so that a proxy misconfiguration surfaces as a plain 404
+ * instead of being silently papered over with the SPA shell.
+ */
+const RESERVED_PREFIXES = ['/api/', '/uploads/'];
+
+/**
  * Resolve a request path to a file inside ROOT, or null if it escapes.
  *
  * Rejecting on the resolved path (not the raw URL) is what stops
@@ -135,6 +142,15 @@ const server = http.createServer(async (req, res) => {
     // Serving index.html for a missing .js would hand the browser HTML where it
     // expects a module, which fails confusingly instead of visibly.
     if (path.extname(urlPath)) {
+      send(res, 404, { 'Content-Type': 'text/plain; charset=utf-8' }, 'Not Found');
+      return;
+    }
+    // Backend-owned prefixes must never fall back to the SPA shell. They have no
+    // file extension, so without this check a misrouted /api/v1/... request gets
+    // index.html with a 200; the API client then parses HTML as JSON, resolves
+    // undefined, and the page dies on the first property access — far from the
+    // actual cause, which is a proxy that isn't forwarding these paths.
+    if (RESERVED_PREFIXES.some((prefix) => urlPath === prefix.slice(0, -1) || urlPath.startsWith(prefix))) {
       send(res, 404, { 'Content-Type': 'text/plain; charset=utf-8' }, 'Not Found');
       return;
     }

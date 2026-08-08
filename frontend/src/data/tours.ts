@@ -121,6 +121,12 @@ export const TOURS: readonly Tour[] = [
     discountPriceUsd: null,
     tourType: 'WILDLIFE_SAFARI',
     destinationSlug: 'masai-mara-national-reserve',
+    // Curated stock — swap for client migration photography when supplied.
+    coverImage: {
+      src: '/images/wildebeest-migration-herd.jpg',
+      width: 1600,
+      height: 1067,
+    },
     isFeatured: true,
   },
   {

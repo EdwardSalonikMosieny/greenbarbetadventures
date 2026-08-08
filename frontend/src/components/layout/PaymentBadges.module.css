@@ -2,17 +2,41 @@
   display: flex;
   gap: var(--space-2);
   flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  /* Even padding on a square-ish box: the glyphs are icons now, not words of
+     differing length, so the pill sizes to the mark rather than the label. */
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-sm);
   background: rgba(240, 236, 227, 0.1);
   border: 1px solid rgba(240, 236, 227, 0.25);
   color: var(--color-cream-100);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  letter-spacing: 0.02em;
+}
+
+.icon {
+  /* Sized in em so the row scales with the surrounding footer type. */
+  width: 1.75em;
+  height: 1.75em;
+  display: block;
+}
+
+/* The mark carries the meaning visually; this gives the same information to a
+   screen reader without showing a second, redundant label on screen. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

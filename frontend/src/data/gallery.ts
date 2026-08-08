@@ -2,6 +2,13 @@
 // Every entry was individually viewed to write real, distinct alt text — see
 // [[real_photo_library_public_images]] memory. image2.mp4 (a video) and image39.jpeg
 // (referenced by a gap in the numbering but not actually present) are excluded.
+//
+// image26, image31, image57 and image61 are excluded too: each is byte-identical
+// to another file already listed here, so the grid rendered the same photo twice.
+// Two of them had also lost their original content — image26 was catalogued as a
+// bush picnic but holds a copy of image25's elephant — so the described photo no
+// longer exists in the library and cannot be restored by editing alt text. Check
+// new drops for duplicates by checksum before adding entries.
 
 export interface GalleryImage {
   slug: string;
@@ -43,12 +50,10 @@ export const GALLERY_IMAGES: readonly GalleryImage[] = [
   { slug: 'rhino-golden-grass', src: '/images/image23.jpeg', alt: 'A black rhino walking across golden grassland', width: 1472, height: 1472 },
   { slug: 'elephant-crossing-1', src: '/images/image24.jpeg', alt: 'An elephant crossing open grassland near a gravel road', width: 1472, height: 1472 },
   { slug: 'elephant-crossing-2', src: '/images/image25.jpeg', alt: 'An elephant crossing open grassland, seen up close', width: 1472, height: 1472 },
-  { slug: 'bush-picnic', src: '/images/image26.jpeg', alt: 'A bush picnic lunch set up on safari', width: 1472, height: 1472 },
   { slug: 'camp-chairs-rhino', src: '/images/image27.jpeg', alt: 'Camp chairs set up with a rhino grazing in the distance', width: 1472, height: 1472 },
   { slug: 'vehicle-rocky-outcrop-1', src: '/images/image28.jpeg', alt: 'A safari vehicle parked beside a rocky outcrop', width: 1472, height: 1472 },
   { slug: 'vehicle-rocky-outcrop-2', src: '/images/image29.jpeg', alt: 'A safari vehicle parked beside a rocky outcrop, a different view', width: 1472, height: 1472 },
   { slug: 'elephant-family-acacia-1', src: '/images/image30.jpeg', alt: 'An elephant family browsing an acacia tree', width: 1472, height: 1472 },
-  { slug: 'elephant-family-acacia-2', src: '/images/image31.jpeg', alt: 'An elephant family browsing an acacia tree, another angle', width: 1472, height: 1472 },
   { slug: 'elephant-family-calf', src: '/images/image32.jpeg', alt: 'An elephant family with a young calf browsing together', width: 1472, height: 1472 },
   { slug: 'safari-vehicle-sunset-1', src: '/images/image33.jpeg', alt: 'A safari vehicle parked under an acacia at sunset', width: 1472, height: 1472 },
   { slug: 'sunset-toast', src: '/images/image34.jpeg', alt: 'Guests toasting drinks beside the safari vehicle at sunset', width: 1472, height: 1472 },
@@ -73,11 +78,9 @@ export const GALLERY_IMAGES: readonly GalleryImage[] = [
   { slug: 'buffalo-grazing-2', src: '/images/image54.jpeg', alt: 'Cape buffalo grazing with the herd in the distance', width: 1472, height: 1472 },
   { slug: 'buffalo-horns-raised', src: '/images/image55.jpeg', alt: 'A cape buffalo facing the camera, horns raised', width: 1472, height: 1472 },
   { slug: 'buffalo-crossing-1', src: '/images/image56.jpeg', alt: 'A cape buffalo crossing a dirt track', width: 1472, height: 1472 },
-  { slug: 'buffalo-crossing-2', src: '/images/image57.jpeg', alt: 'A cape buffalo crossing a dirt track, another view', width: 1472, height: 1472 },
   { slug: 'baboon-baby-1', src: '/images/image58.jpeg', alt: 'A baboon and her baby in the grass', width: 1472, height: 1472 },
   { slug: 'baboon-baby-2', src: '/images/image59.jpeg', alt: 'A baboon and her baby among the troop', width: 1472, height: 1472 },
   { slug: 'wildebeest-herd-1', src: '/images/image60.jpeg', alt: 'A wildebeest herd grazing on open plains', width: 1472, height: 1472 },
-  { slug: 'wildebeest-herd-2', src: '/images/image61.jpeg', alt: 'A wildebeest herd grazing on open plains, a wider view', width: 1472, height: 1472 },
   { slug: 'wildebeest-portrait-1', src: '/images/image62.jpeg', alt: 'A wildebeest facing the camera', width: 1472, height: 1472 },
   { slug: 'wildebeest-portrait-2', src: '/images/image63.jpeg', alt: 'A wildebeest facing the camera, a lion resting nearby', width: 1472, height: 1472 },
   { slug: 'white-rhino-alone', src: '/images/image64.jpeg', alt: 'A white rhino grazing alone', width: 1472, height: 1472 },

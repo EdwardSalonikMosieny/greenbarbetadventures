@@ -41,7 +41,11 @@ async function request<TResponse>(path: string, init?: RequestInit): Promise<TRe
     },
   });
 
-  const body = await res.json().catch(() => undefined);
+  let parseFailed = false;
+  const body = await res.json().catch(() => {
+    parseFailed = true;
+    return undefined;
+  });
 
   if (!res.ok) {
     throw new ApiError(
@@ -49,6 +53,15 @@ async function request<TResponse>(path: string, init?: RequestInit): Promise<TRe
       res.status,
       body?.details,
     );
+  }
+
+  // A 2xx whose body isn't JSON is still a failed request — it usually means a
+  // proxy answered instead of the API (an HTML error page or the SPA shell).
+  // Returning undefined here would satisfy the type signature while handing
+  // callers nothing, so the crash lands later at the first property access
+  // rather than in the `.catch` that every caller already has.
+  if (parseFailed && res.status !== 204) {
+    throw new ApiError('Unexpected non-JSON response from the API', res.status);
   }
 
   return body as TResponse;

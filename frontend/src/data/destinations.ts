@@ -399,9 +399,13 @@ export const DESTINATIONS: readonly Destination[] = [
       "The Mara Triangle and the private conservancies bordering the main reserve — Mara North, Naboisho, and Olare Motorogi among them — offer lower vehicle density and off-road game drives that aren't permitted inside the reserve itself, for a quieter, more flexible safari. A sunrise hot air balloon safari over the plains, landing to a champagne bush breakfast, is one of Kenya's most popular add-on experiences and a spectacular way to see the migration herds from above.",
       "The reserve takes its name from the Maasai people, who have grazed cattle across this landscape for generations and still live in and around it today. A visit to a Maasai manyatta (homestead) — with traditional beadwork, song, and the athletic adumu jumping dance — is a genuine, widely available add-on to a Mara safari and one of Kenya's best-known cultural experiences (see our Cultural Tours). The Mara is roughly a 45-minute scheduled flight from Nairobi, or a five- to six-hour drive via Narok, and rewards a visit either during the July–October migration or the drier, quieter January–February season.",
     ],
-    heroImageUrl: '/images/image13.jpeg',
-    heroImageWidth: 1472,
-    heroImageHeight: 1472,
+    // The Great Migration is what the Mara is known for, and the client's photo
+    // library has only a handful of grazing wildebeest under overcast skies —
+    // nothing that reads as a crossing. Curated stock until real migration
+    // photography is supplied; swappable with zero layout change.
+    heroImageUrl: '/images/mara-river-crossing.jpg',
+    heroImageWidth: 1600,
+    heroImageHeight: 1068,
     tourCount: 3,
     isFeatured: true,
   },
