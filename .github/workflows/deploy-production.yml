@@ -204,6 +204,10 @@ jobs:
           # tooling. The process is not internet-facing — the proxy is.
           ssh_retry "${SSH_USER}@${SSH_HOST}" "mkdir -p ${APP_DEPLOY_PATH}/logs ${APP_DEPLOY_PATH}/backend/uploads"
           ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/backend && npm ci"
+          # Prisma 7 no longer generates the client on postinstall, so without
+          # this @prisma/client is still a stub and `tsc` fails on the missing
+          # PrismaClient export. Must run before both migrate and build.
+          ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/backend && npx prisma generate"
           ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/backend && npx prisma migrate deploy"
           ssh_retry "${SSH_USER}@${SSH_HOST}" "cd ${APP_DEPLOY_PATH}/backend && npm run build"
 
