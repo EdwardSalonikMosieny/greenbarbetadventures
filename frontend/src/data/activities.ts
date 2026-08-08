@@ -59,17 +59,6 @@ export const ACTIVITIES: readonly Activity[] = [
     isFeatured: true,
   },
   {
-    slug: 'cultural-village-visits',
-    title: 'Cultural Village Visits',
-    description:
-      'Meet the Samburu communities of northern Kenya and learn traditions passed down along the Ewaso Nyiro River.',
-    imageUrl:
-      'https://www.greenbarbetadventures.com/wp-content/uploads/2026/03/Samburu-2-1024x768.webp',
-    imageWidth: 1024,
-    imageHeight: 768,
-    isFeatured: false,
-  },
-  {
     slug: 'dhow-sunset-cruise',
     title: 'Dhow Sunset Cruise',
     description:

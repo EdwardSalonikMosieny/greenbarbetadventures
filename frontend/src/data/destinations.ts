@@ -218,10 +218,12 @@ export const DESTINATIONS: readonly Destination[] = [
       "Ol Pejeta sits on the Laikipia Plateau just south of Nanyuki — itself famous as one of the few places on the planet where you can stand with one foot in each hemisphere at the marked equator crossing on the Nyeri–Nanyuki road, a popular stop on the way in or out of the conservancy. Inside, Ol Pejeta protects the largest black rhino population in East Africa and is home to Najin and Fatu, the last two northern white rhinos left on Earth, kept under 24-hour armed guard. It's also one of the few conservancies with all of the Big Five, plus Sweetwaters Chimpanzee Sanctuary, East Africa's only chimpanzee sanctuary, home to chimps rescued from captivity and conflict elsewhere in Africa. Conservation fees paid by visitors fund the anti-poaching and community programs that keep it all running.",
     ],
     // Real client photo — the "You Are on the Equator" marker branded with the Ol Pejeta
-    // Conservancy sign, an unmistakable, well-known Ol Pejeta landmark.
-    heroImageUrl: '/images/olpejetarepresentationpic.jpeg',
+    // Conservancy sign, an unmistakable, well-known Ol Pejeta landmark. Cropped from the
+    // original square upload to a hero-friendly ratio that keeps the full sign in frame
+    // (the square original made object-fit: cover crop off the top/bottom text).
+    heroImageUrl: '/images/olpejeta-hero.jpeg',
     heroImageWidth: 1472,
-    heroImageHeight: 1472,
+    heroImageHeight: 900,
     gallery: [
       {
         // Real photo supplied by the client — a black leopard (a genuine, well-documented
