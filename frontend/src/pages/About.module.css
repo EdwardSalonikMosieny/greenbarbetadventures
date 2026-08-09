@@ -31,15 +31,28 @@
   max-width: 65ch;
 }
 
-.collage {
+.collageGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: var(--space-2);
   width: 100%;
   max-width: 420px;
+  aspect-ratio: 1 / 1;
   border-radius: var(--radius-lg);
+  overflow: hidden;
   box-shadow: var(--shadow-lg);
 }
 
+.collageGrid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 @media (min-width: 1024px) {
-  .collage {
+  .collageGrid {
     flex: 1 1 40%;
   }
 }

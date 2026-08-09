@@ -50,13 +50,30 @@ function About() {
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.15}>
+          <FadeIn delay={0.15} className={styles.collageGrid}>
             <OptimizedImage
-              src="/images/equator-sign-nanyuki.jpg"
+              src="/images/grevys-zebra-samburu.jpg"
+              width={1391}
+              height={1241}
+              alt="A Grevy's zebra in the bush at Samburu National Reserve — wildlife safaris"
+            />
+            <OptimizedImage
+              src="/images/maasai-manyatta.jpg"
               width={1600}
-              height={1044}
-              alt="Travelers at the Equator sign outside Nanyuki, near Mount Kenya, with a local guide demonstrating the water-swirl trick"
-              className={styles.collage}
+              height={352}
+              alt="A Maasai manyatta homestead near the Masai Mara — cultural tours"
+            />
+            <OptimizedImage
+              src="/images/mount-kenya-clear.jpg"
+              width={1024}
+              height={768}
+              alt="Mount Kenya's Batian and Nelion peaks — mountain climbing and hikes"
+            />
+            <OptimizedImage
+              src="/images/eqitorimage.jpeg"
+              width={399}
+              height={501}
+              alt="The equator marker in Nanyuki, near Green Barbet Adventures' Naromoru base"
             />
           </FadeIn>
         </div>
