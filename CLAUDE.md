@@ -20,7 +20,7 @@ The new site must feel like a completely different, premium, trustworthy, modern
 - Company: Green Barbet Adventures Ltd
 - Tagline: "Dream, Explore, Discover"
 - Location: Near Naromoru River Lodge, Naromoru, Kenya
-- Contact: +254 712 379 112 · +254 795 610 847 · info@greenbarbetadventures.com
+- Contact: +254 721 379 112 · +254 795 610 847 · info@greenbarbetadventures.com
 - Positioning: "Explore Kenya like never before" — every destination leaves a unique memory; serves both romantic honeymoon travelers and families.
 - Trust stat: 600+ customers served.
 

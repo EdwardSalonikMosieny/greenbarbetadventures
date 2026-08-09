@@ -34,7 +34,7 @@ export const SECONDARY_LINKS: readonly NavLink[] = [
 ];
 
 export const CONTACT_INFO = {
-  phones: ['+254 712 379 112', '+254 795 610 847'],
+  phones: ['+254 721 379 112', '+254 795 610 847'],
   email: 'info@greenbarbetadventures.com',
   address: 'Near Naromoru River Lodge, Naromoru, Kenya',
 } as const;
