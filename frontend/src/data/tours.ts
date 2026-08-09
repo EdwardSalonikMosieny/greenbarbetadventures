@@ -133,15 +133,43 @@ export const TOURS: readonly Tour[] = [
     title: '7-Day Best of Kenya Classic Bush Safari',
     slug: '7-day-best-of-kenya-classic-bush-safari',
     description:
-      'A comprehensive circuit across Kenya’s premier parks — from the Rift Valley to the Mara.',
+      'A comprehensive circuit across Kenya’s premier parks and lakes — Nakuru, the Mara, Naivasha, and Amboseli.',
     itinerary: [
-      { day: 1, summary: 'Drive from Nairobi to Lake Nakuru National Park, known for its soda lake, flamingo flocks, and protected rhino population.' },
-      { day: 2, summary: 'Transfer from Lake Nakuru to the Masai Mara, settling in ahead of a full day of game drives to follow.' },
-      { day: 3, summary: 'Spend a full day on game drives across the Masai Mara, tracking the Big Five and, in season, the wildebeest migration.' },
-      { day: 4, summary: "Drive from the Masai Mara to Amboseli National Park, beneath the slopes of Mount Kilimanjaro." },
-      { day: 5, summary: "Spend a full day exploring Amboseli's plains and swamps, home to some of Africa's largest free-ranging elephant herds, with Kilimanjaro views on clear mornings." },
-      { day: 6, summary: "Drive from Amboseli to Ol Pejeta Conservancy, East Africa's largest black rhino sanctuary." },
-      { day: 7, summary: 'Join a morning rhino tracking activity at Ol Pejeta before the drive back to Nairobi.' },
+      {
+        day: 1,
+        summary:
+          'Depart Nairobi and drive to Lake Nakuru National Park, famous for its scenic soda lake, diverse birdlife, and protected rhino population. Afternoon game drive in search of rhino, lion, buffalo, giraffe, and more.',
+      },
+      {
+        day: 2,
+        summary:
+          "Drive from Lake Nakuru to the Masai Mara, arriving in time for lunch. Depending on arrival time, an afternoon game drive in search of the Mara's abundant wildlife.",
+      },
+      {
+        day: 3,
+        summary:
+          'Full day of game drives across the Masai Mara, with opportunities to see the Big Five, cheetahs, giraffes, hippos, crocodiles, and numerous bird species. In migration season, watch for dramatic river crossings when conditions permit.',
+      },
+      {
+        day: 4,
+        summary:
+          'Depart the Masai Mara and drive toward Lake Naivasha or Lake Elementaita. Afternoon boat ride on Lake Naivasha, surrounded by scenery and abundant birdlife — keep an eye out for hippos and waterbirds.',
+      },
+      {
+        day: 5,
+        summary:
+          "Early morning departure toward Amboseli National Park, arriving for an afternoon game drive across its open plains and wetlands. Amboseli is renowned for its large elephant herds and, on clear mornings and late afternoons, spectacular views of Mount Kilimanjaro.",
+      },
+      {
+        day: 6,
+        summary:
+          "Full day exploring Amboseli — close encounters with elephants and a search for lions, cheetahs, buffalo, giraffe, zebra, wildebeest, and hippos, with Mount Kilimanjaro as a backdrop for photography.",
+      },
+      {
+        day: 7,
+        summary:
+          'Early morning game drive, weather and schedule permitting, then breakfast before departing Amboseli for the drive back to Nairobi, arriving in the afternoon.',
+      },
     ],
     durationDays: 7,
     durationNights: 6,
@@ -293,6 +321,37 @@ export const TOURS: readonly Tour[] = [
       'Reusable water bottles',
     ],
     isFeatured: true,
+  },
+  {
+    title: 'Solio Game Reserve Day Trip',
+    slug: 'solio-game-reserve-day-trip',
+    description:
+      'A single-day rhino conservation safari from Naro Moru or Nanyuki, with a visit to the Solio Rhino Orphanage.',
+    itinerary: [
+      {
+        day: 1,
+        summary:
+          "Early pick-up (6:30am) from Naro Moru or Nanyuki and drive to Solio Game Reserve, entering by 7:00am for a morning game drive through one of Kenya's key rhino conservation areas — black and white rhino, buffalo, giraffe, zebra, eland and other antelope, plus lion and other predators and a wide variety of birdlife. Mid-morning (around 10:30am), visit the Solio Rhino Orphanage for roughly an hour to learn about the care and rehabilitation of orphaned rhino calves — subject to the orphanage's own booking and availability, so we recommend confirming in advance. Continue the game drive afterward, break for a picnic lunch around 1:00pm at an approved spot (picnics inside the conservancy require Solio's prior approval), then an afternoon game drive before exiting the reserve around 4:00pm for the drive back, arriving in Naro Moru or Nanyuki by 4:30–5:00pm. Note: Solio's gates open at 6:30am with no entries accepted after 4:30pm; official gate passes are required and the reserve does not accept cash payments.",
+      },
+    ],
+    durationDays: 1,
+    durationNights: 0,
+    // Internal placeholder — day trip has no published price from the owner yet; not shown
+    // publicly regardless per the pricing display policy (see CLAUDE.md).
+    priceUsd: 150,
+    discountPriceUsd: null,
+    tourType: 'WILDLIFE_SAFARI',
+    destinationSlug: 'solio-game-reserve',
+    included: [
+      'Rhino conservation experience',
+      'Visit to the Solio Rhino Orphanage',
+      'Big-game viewing',
+      'Giraffes and plains wildlife',
+      'Birdwatching',
+      'Photography opportunities',
+      'Scenic views of the Laikipia landscape',
+    ],
+    isFeatured: false,
   },
   // Realistic seed data for the Cultural Tours category — Maasai and Samburu community
   // visits are genuine, widely-offered Kenyan cultural tourism experiences, built around
