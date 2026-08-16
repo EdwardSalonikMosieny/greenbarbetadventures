@@ -24,6 +24,7 @@ function AdminLogin() {
   const navigate = useNavigate();
   const location = useLocation();
   const [formError, setFormError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const {
     register,
     handleSubmit,
@@ -74,13 +75,35 @@ function AdminLogin() {
               <label htmlFor="login-password" className={styles.label}>
                 Password
               </label>
-              <input
-                id="login-password"
-                type="password"
-                className={styles.input}
-                autoComplete="current-password"
-                {...register('password')}
-              />
+              <div className={styles.passwordField}>
+                <input
+                  id="login-password"
+                  type={showPassword ? 'text' : 'password'}
+                  className={styles.input}
+                  autoComplete="current-password"
+                  {...register('password')}
+                />
+                <button
+                  type="button"
+                  className={styles.togglePassword}
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  aria-pressed={showPassword}
+                >
+                  {showPassword ? (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                      <circle cx="12" cy="12" r="3" />
+                      <line x1="3" y1="21" x2="21" y2="3" />
+                    </svg>
+                  ) : (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  )}
+                </button>
+              </div>
               {errors.password && <p className={styles.errorText}>{errors.password.message}</p>}
             </div>
 

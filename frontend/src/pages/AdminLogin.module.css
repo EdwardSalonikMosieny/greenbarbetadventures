@@ -46,6 +46,36 @@
   outline-offset: 2px;
 }
 
+.passwordField {
+  position: relative;
+  display: flex;
+}
+
+.passwordField .input {
+  padding-right: var(--space-8);
+}
+
+.togglePassword {
+  position: absolute;
+  top: 50%;
+  right: var(--space-3);
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+}
+
+.togglePassword:hover {
+  color: var(--color-text);
+}
+
+.togglePassword:focus-visible {
+  outline: 2px solid var(--color-cta);
+  outline-offset: 2px;
+}
+
 .submit {
   background: var(--color-cta);
   color: var(--color-cta-text);
